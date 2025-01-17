@@ -1,0 +1,36 @@
+# Tuist generated files
+*.xcodeproj
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata
+*.xcscheme
+*.xcodeproj/project.xcworkspace/xcuserdata
+*.xcodeproj/xcuserdata
+*.xcodeproj/xcuserdata/*.xcuserdatad
+
+# Build products
+build/
+DerivedData/
+*.app
+*.ipa
+*.dSYM
+
+# Swift Package Manager
+/.build/
+/Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Other
+*.swp
+*.lock
+*.DS_Store
+*.user
+*.userprefs
+*.sublime-workspace
+*.sublime-project 
