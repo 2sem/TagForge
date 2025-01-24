@@ -92,6 +92,20 @@ struct ContentView: View {
                             .foregroundColor(.blue)
                     }
                     .padding(.leading, 8)
+                    
+                    Button(action: {
+                        let activityVC = UIActivityViewController(activityItems: [generatedTags], applicationActivities: nil)
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                           let window = windowScene.windows.first,
+                           let rootVC = window.rootViewController {
+                            activityVC.popoverPresentationController?.sourceView = rootVC.view
+                            rootVC.present(activityVC, animated: true)
+                        }
+                    }) {
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundColor(.blue)
+                    }
+                    .disabled(generatedTags.isEmpty)
                 }
             }
             .padding()
