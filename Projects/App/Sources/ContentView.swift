@@ -6,28 +6,29 @@ struct ContentView: View {
     @State private var generatedTags: String = ""
     @State private var replaceSpacesWithUnderscore: Bool = false
     @State private var attachSharpTag: Bool = false
-
+    @State private var generateCombinations: Bool = false
+    
     var body: some View {
         VStack {
             TextField("Enter a word...", text: $inputText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-
+            
             Button("Add Word") {
                 addWord()
             }
             .padding()
-
+            
             List {
                 ForEach(wordList, id: \.self) { word in
                     Text(word)
                 }
                 .onDelete(perform: deleteWords)
             }
-                .padding()
-
-HStack {
-    HStack {
+            .padding()
+            
+            HStack {
+                HStack {
                     Image(systemName: replaceSpacesWithUnderscore ? "checkmark.square" : "square")
                     Text("Use _")
                 }
@@ -40,28 +41,37 @@ HStack {
                 }
                 .onTapGesture {
                     attachSharpTag.toggle()
-        if attachSharpTag {
-            replaceSpacesWithUnderscore = true
+                    if attachSharpTag {
+                        replaceSpacesWithUnderscore = true
+                    }
                 }
-            }
-    Spacer()
-}
-            .padding()
 
+                HStack {
+                    Image(systemName: generateCombinations ? "checkmark.square" : "square")
+                    Text("Combinations")
+                }
+                .onTapGesture {
+                    generateCombinations.toggle()
+                }
+
+                Spacer()
+            }
+            .padding()
+            
             Button("Generate Tags") {
                 generateTags()
-        }
-        .padding()
-
+            }
+            .padding()
+            
             Text(generatedTags)
                 .padding(5)
                 .background(Color.blue.opacity(0.2))
                 .cornerRadius(8)
                 .padding()
-    }
+        }
         .padding()
     }
-
+    
     private func addWord() {
         let trimmedText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmedText.isEmpty {
@@ -69,11 +79,11 @@ HStack {
             inputText = ""
         }
     }
-
+    
     private func deleteWords(at offsets: IndexSet) {
         wordList.remove(atOffsets: offsets)
     }
-
+    
     private func generateTags() {
         var tags = wordList.map { word in
             var tag = word
@@ -85,7 +95,25 @@ HStack {
             }
             return tag
         }
+        
+        if generateCombinations {
+            let combinations = generateCombinations(of: tags)
+            tags.append(contentsOf: combinations)
+        }
+        
         generatedTags = tags.joined(separator: ", ")
+    }
+    
+    private func generateCombinations(of words: [String]) -> [String] {
+        var combinations = [String]()
+        
+        for length in 2...words.count {
+            for combination in words.combinations(ofLength: length) {
+                combinations.append(combination.joined())
+            }
+        }
+        
+        return combinations
     }
 }
 
@@ -93,4 +121,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-} 
+}
