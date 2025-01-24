@@ -80,11 +80,13 @@ struct ContentView: View {
                     .cornerRadius(8)
                     .onLongPressGesture {
                         UIPasteboard.general.string = generatedTags
+                        showingCopiedAlert = true
                     }
                 
                 if !generatedTags.isEmpty {
                     Button(action: {
                         UIPasteboard.general.string = generatedTags
+                        showingCopiedAlert = true
                     }) {
                         Image(systemName: "doc.on.doc")
                             .foregroundColor(.blue)
@@ -93,6 +95,26 @@ struct ContentView: View {
                 }
             }
             .padding()
+            .overlay(
+                Group {
+                    if showingCopiedAlert {
+                        VStack {
+                            Spacer()
+                            Text("Tags copied!")
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.black.opacity(0.75))
+                                .cornerRadius(10)
+                                .transition(.move(edge: .bottom))
+                                .onAppear {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        showingCopiedAlert = false
+                                    }
+                                }
+                        }
+                    }
+                }
+            )
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
             Button("OK", role: .cancel) { }
