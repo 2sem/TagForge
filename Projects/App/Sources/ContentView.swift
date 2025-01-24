@@ -7,6 +7,7 @@ struct ContentView: View {
     @State private var replaceSpacesWithUnderscore: Bool = false
     @State private var attachSharpTag: Bool = false
     @State private var generateCombinations: Bool = false
+    @State private var showingCopiedAlert = false
     
     var body: some View {
         VStack {
@@ -72,11 +73,26 @@ struct ContentView: View {
             }
             .padding()
             
-            Text(generatedTags)
-                .padding(5)
-                .background(Color.blue.opacity(0.2))
-                .cornerRadius(8)
-                .padding()
+            HStack {
+                Text(generatedTags)
+                    .padding(5)
+                    .background(Color.blue.opacity(0.2))
+                    .cornerRadius(8)
+                    .onLongPressGesture {
+                        UIPasteboard.general.string = generatedTags
+                    }
+                
+                if !generatedTags.isEmpty {
+                    Button(action: {
+                        UIPasteboard.general.string = generatedTags
+                    }) {
+                        Image(systemName: "doc.on.doc")
+                            .foregroundColor(.blue)
+                    }
+                    .padding(.leading, 8)
+                }
+            }
+            .padding()
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
             Button("OK", role: .cancel) { }
