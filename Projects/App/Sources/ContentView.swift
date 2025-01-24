@@ -34,7 +34,6 @@ struct ContentView: View {
                 .onTapGesture {
                     replaceSpacesWithUnderscore.toggle()
                 }
-                Spacer()
                 HStack {
                     Image(systemName: attachSharpTag ? "checkmark.square" : "square")
                     Text("#")
@@ -42,6 +41,7 @@ struct ContentView: View {
                 .onTapGesture {
                     attachSharpTag.toggle()
                 }
+                Spacer()
             }
             .padding()
 
