@@ -26,8 +26,8 @@ struct ContentView: View {
             }
                 .padding()
 
-            HStack {
-                HStack {
+HStack {
+    HStack {
                     Image(systemName: replaceSpacesWithUnderscore ? "checkmark.square" : "square")
                     Text("Use _")
                 }
@@ -40,9 +40,12 @@ struct ContentView: View {
                 }
                 .onTapGesture {
                     attachSharpTag.toggle()
+        if attachSharpTag {
+            replaceSpacesWithUnderscore = true
                 }
-                Spacer()
             }
+    Spacer()
+}
             .padding()
 
             Button("Generate Tags") {
