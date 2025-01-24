@@ -1,40 +1,44 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var inputText: String = "" // 입력받을 단어를 저장할 상태 변수
-    @State private var wordList: [String] = [] // 등록된 단어 목록을 저장할 상태 변수
-    @State private var generatedTags: String = "" // 생성된 태그를 저장할 상태 변수
-    @State private var replaceSpacesWithUnderscore: Bool = false // 공백을 _로 치환할지 선택하는 상태 변수
+    @State private var inputText: String = "" // Input word state variable
+    @State private var wordList: [String] = [] // List of registered words
+    @State private var generatedTags: String = "" // Generated tags as a single string
+    @State private var replaceSpacesWithUnderscore: Bool = false // Option to replace spaces with underscores
+    @State private var attachSharpTag: Bool = false // Option to attach sharp tag
 
     var body: some View {
         VStack {
-            TextField("Enter a word...", text: $inputText) // 단어 입력 필드
+            TextField("Enter a word...", text: $inputText) // Input field for words
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
 
             Button("Add Word") {
-                addWord() // 단어 추가 버튼
+                addWord() // Button to add a word
             }
             .padding()
 
             List {
                 ForEach(wordList, id: \.self) { word in
-                    Text(word) // 등록된 단어 표시
+                    Text(word) // Display registered words
                 }
-                .onDelete(perform: deleteWords) // 스와이프하여 삭제 기능
+                .onDelete(perform: deleteWords) // Swipe to delete functionality
             }
             .padding()
 
-            Toggle("Replace spaces with _", isOn: $replaceSpacesWithUnderscore) // 체크박스 추가
+            Toggle("Replace spaces with _", isOn: $replaceSpacesWithUnderscore) // Checkbox to replace spaces
+                .padding()
+
+            Toggle("Sharp Tag", isOn: $attachSharpTag) // Checkbox to attach sharp tag
                 .padding()
 
             Button("Generate Tags") {
-                generateTags() // 태그 생성 버튼
+                generateTags() // Button to generate tags
             }
             .padding()
 
-            // 생성된 태그 표시
-            Text(generatedTags) // 생성된 태그 표시
+            // Display generated tags
+            Text(generatedTags) // Display generated tags
                 .padding(5)
                 .background(Color.blue.opacity(0.2))
                 .cornerRadius(8)
@@ -46,25 +50,31 @@ struct ContentView: View {
     private func addWord() {
         let trimmedText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmedText.isEmpty {
-            wordList.append(trimmedText) // 입력된 단어를 목록에 추가
-            inputText = "" // 입력 필드 초기화
+            wordList.append(trimmedText) // Add the entered word to the list
+            inputText = "" // Clear the input field
         }
     }
 
     private func deleteWords(at offsets: IndexSet) {
-        wordList.remove(atOffsets: offsets) // 스와이프하여 삭제
+        wordList.remove(atOffsets: offsets) // Remove words with swipe
     }
 
     private func generateTags() {
-        if replaceSpacesWithUnderscore {
-            generatedTags = wordList.map { $0.replacingOccurrences(of: " ", with: "_") }.joined(separator: ", ") // 공백을 _로 치환하여 태그 생성
-        } else {
-            generatedTags = wordList.joined(separator: ", ") // 단어들을 하나의 문자열로 결합
+        var tags = wordList.map { word in
+            var tag = word
+            if replaceSpacesWithUnderscore {
+                tag = tag.replacingOccurrences(of: " ", with: "_") // Replace spaces with underscores
+            }
+            if attachSharpTag {
+                tag = "#" + tag // Attach sharp tag
+            }
+            return tag
         }
+        generatedTags = tags.joined(separator: ", ") // Join tags into a single string
     }
 }
 
-// 미리보기 추가
+// Preview
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
