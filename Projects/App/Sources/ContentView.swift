@@ -39,7 +39,7 @@ struct ContentView: View {
             HStack {
                 HStack {
                     Image(systemName: replaceSpacesWithUnderscore ? "checkmark.square" : "square")
-                    Text("Use _")
+                    Text("Space to _")
                 }
                 .onTapGesture {
                     replaceSpacesWithUnderscore.toggle()
