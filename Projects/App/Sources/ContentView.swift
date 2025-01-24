@@ -21,7 +21,16 @@ struct ContentView: View {
             
             List {
                 ForEach(wordList, id: \.self) { word in
-                    Text(word)
+                    HStack {
+                        Text(word)
+                        Spacer()
+                        Button(action: {
+                            deleteWord(word: word)
+                        }) {
+                            Image(systemName: "xmark")
+                                .foregroundColor(.red)
+                        }
+                    }
                 }
                 .onDelete(perform: deleteWords)
             }
@@ -45,7 +54,7 @@ struct ContentView: View {
                         replaceSpacesWithUnderscore = true
                     }
                 }
-
+                
                 HStack {
                     Image(systemName: generateCombinations ? "checkmark.square" : "square")
                     Text("Combinations")
@@ -53,7 +62,7 @@ struct ContentView: View {
                 .onTapGesture {
                     generateCombinations.toggle()
                 }
-
+                
                 Spacer()
             }
             .padding()
@@ -74,7 +83,7 @@ struct ContentView: View {
     
     private func addWord() {
         let trimmedText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedText.isEmpty {
+        if !trimmedText.isEmpty && !wordList.contains(trimmedText) {
             wordList.append(trimmedText)
             inputText = ""
         }
@@ -82,6 +91,12 @@ struct ContentView: View {
     
     private func deleteWords(at offsets: IndexSet) {
         wordList.remove(atOffsets: offsets)
+    }
+    
+    private func deleteWord(word: String) {
+        if let index = wordList.firstIndex(where: { $0 == word }) {
+            wordList.remove(at: index)
+        }
     }
     
     private func generateTags() {
