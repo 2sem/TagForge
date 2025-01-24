@@ -29,7 +29,7 @@ struct ContentView: View {
             HStack {
                 HStack {
                     Image(systemName: replaceSpacesWithUnderscore ? "checkmark.square" : "square")
-                    Text("Replace spaces with _")
+                    Text("Use _")
                 }
                 .onTapGesture {
                     replaceSpacesWithUnderscore.toggle()
@@ -37,7 +37,7 @@ struct ContentView: View {
                 Spacer()
                 HStack {
                     Image(systemName: attachSharpTag ? "checkmark.square" : "square")
-                    Text("Sharp Tag")
+                    Text("#")
                 }
                 .onTapGesture {
                     attachSharpTag.toggle()
