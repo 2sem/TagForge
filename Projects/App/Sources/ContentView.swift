@@ -78,12 +78,29 @@ struct ContentView: View {
                 .cornerRadius(8)
                 .padding()
         }
+        .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("'\(duplicateWord)' is already in the list")
+        }
         .padding()
     }
     
+    @State private var showingDuplicateAlert = false
+    @State private var duplicateWord = ""
+    
     private func addWord() {
         let trimmedText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedText.isEmpty && !wordList.contains(trimmedText) {
+        guard !trimmedText.isEmpty else {
+            return
+        }
+        guard !wordList.contains(trimmedText) else {
+            duplicateWord = trimmedText
+            showingDuplicateAlert = true
+            return
+        }
+        
+        if !wordList.contains(trimmedText) {
             wordList.append(trimmedText)
             inputText = ""
         }
