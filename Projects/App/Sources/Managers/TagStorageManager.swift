@@ -5,38 +5,71 @@
 //  Created by 영준 이 on 1/29/25.
 //
 
-// TagStorageManager.swift
 import Foundation
+
+struct WordSet: Codable {
+    let name: String
+    let words: [String]
+    let settings: Settings
+    
+    struct Settings: Codable {
+        let replaceSpaces: Bool
+        let attachSharp: Bool
+        let generateCombinations: Bool
+    }
+}
 
 class TagStorageManager {
     static let shared = TagStorageManager()
     private let defaults = UserDefaults.standard
     
-    private let WORDS_KEY = "savedWords"
-    private let REPLACE_SPACES_KEY = "replaceSpaces"
-    private let ATTACH_SHARP_KEY = "attachSharp"
-    private let GENERATE_COMBINATIONS_KEY = "generateCombinations"
+    private let WORD_SETS_KEY = "wordSets"
+    private let CURRENT_SET_KEY = "currentSetName"
     
     private init() {}
     
-    func saveWords(_ words: [String]) {
-        defaults.set(words, forKey: WORDS_KEY)
+    func saveWordSet(name: String, words: [String], settings: WordSet.Settings) {
+        var wordSets = getAllWordSets()
+        let newSet = WordSet(name: name, words: words, settings: settings)
+        
+        // Update or add the word set
+        if let index = wordSets.firstIndex(where: { $0.name == name }) {
+            wordSets[index] = newSet
+        } else {
+            wordSets.append(newSet)
+        }
+        
+        if let encoded = try? JSONEncoder().encode(wordSets) {
+            defaults.set(encoded, forKey: WORD_SETS_KEY)
+        }
     }
     
-    func loadWords() -> [String] {
-        return defaults.stringArray(forKey: WORDS_KEY) ?? []
+    func getAllWordSets() -> [WordSet] {
+        guard let data = defaults.data(forKey: WORD_SETS_KEY),
+              let wordSets = try? JSONDecoder().decode([WordSet].self, from: data) else {
+            return []
+        }
+        return wordSets
     }
     
-    func saveSettings(replaceSpaces: Bool, attachSharp: Bool, generateCombinations: Bool) {
-        defaults.set(replaceSpaces, forKey: REPLACE_SPACES_KEY)
-        defaults.set(attachSharp, forKey: ATTACH_SHARP_KEY)
-        defaults.set(generateCombinations, forKey: GENERATE_COMBINATIONS_KEY)
+    func getWordSet(named name: String) -> WordSet? {
+        return getAllWordSets().first { $0.name == name }
     }
     
-    func loadSettings() -> (replaceSpaces: Bool, attachSharp: Bool, generateCombinations: Bool) {
-        let replaceSpaces = defaults.bool(forKey: REPLACE_SPACES_KEY)
-        let attachSharp = defaults.bool(forKey: ATTACH_SHARP_KEY)
-        let generateCombinations = defaults.bool(forKey: GENERATE_COMBINATIONS_KEY)
-        return (replaceSpaces, attachSharp, generateCombinations)
+    func deleteWordSet(named name: String) {
+        var wordSets = getAllWordSets()
+        wordSets.removeAll { $0.name == name }
+        
+        if let encoded = try? JSONEncoder().encode(wordSets) {
+            defaults.set(encoded, forKey: WORD_SETS_KEY)
+        }
+    }
+    
+    func setCurrentSet(name: String) {
+        defaults.set(name, forKey: CURRENT_SET_KEY)
+    }
+    
+    func getCurrentSetName() -> String? {
+        return defaults.string(forKey: CURRENT_SET_KEY)
     }
 }

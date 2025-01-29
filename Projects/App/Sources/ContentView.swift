@@ -11,25 +11,66 @@ struct ContentView: View {
 
     @State private var clipboardWords: [String] = []
     
-    private func saveState() {
-        TagStorageManager.shared.saveWords(wordList)
-        TagStorageManager.shared.saveSettings(
+    @State private var currentSetName: String = ""
+    @State private var showingSetNameDialog = false
+    @State private var newSetName: String = ""
+    @State private var availableSets: [WordSet] = []
+    
+    private func saveCurrentSet() {
+        guard !currentSetName.isEmpty else { return }
+        
+        let settings = WordSet.Settings(
             replaceSpaces: replaceSpacesWithUnderscore,
             attachSharp: attachSharpTag,
             generateCombinations: generateCombinations
         )
+        
+        TagStorageManager.shared.saveWordSet(
+            name: currentSetName,
+            words: wordList,
+            settings: settings
+        )
     }
     
-    private func loadState() {
-        wordList = TagStorageManager.shared.loadWords()
-        let settings = TagStorageManager.shared.loadSettings()
-        replaceSpacesWithUnderscore = settings.replaceSpaces
-        attachSharpTag = settings.attachSharp
-        generateCombinations = settings.generateCombinations
+    private func loadSet(named name: String) {
+        guard let set = TagStorageManager.shared.getWordSet(named: name) else { return }
+        
+        currentSetName = set.name
+        wordList = set.words
+        replaceSpacesWithUnderscore = set.settings.replaceSpaces
+        attachSharpTag = set.settings.attachSharp
+        generateCombinations = set.settings.generateCombinations
+        
+        TagStorageManager.shared.setCurrentSet(name: name)
+    }
+    
+    private func loadAvailableSets() {
+        availableSets = TagStorageManager.shared.getAllWordSets()
     }
     
     var body: some View {
         VStack {
+            // Add set selection menu
+            HStack {
+                Menu {
+                    ForEach(availableSets, id: \.name) { set in
+                        Button(set.name) {
+                            loadSet(named: set.name)
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Text(currentSetName.isEmpty ? "Select Set" : currentSetName)
+                        Image(systemName: "chevron.down")
+                    }
+                }
+                
+                Button("New Set") {
+                    showingSetNameDialog = true
+                }
+            }
+            .padding()
+            
             TextField("Enter a word...", text: $inputText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
@@ -150,25 +191,38 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            loadState()
-            checkClipboard()
+            loadAvailableSets()
+            if let currentName = TagStorageManager.shared.getCurrentSetName() {
+                loadSet(named: currentName)
+            }
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text("'\(duplicateWord)' is already in the list")
         }
+        .alert("New Set Name", isPresented: $showingSetNameDialog) {
+            TextField("Set Name", text: $newSetName)
+            Button("Cancel", role: .cancel) { }
+            Button("Save") {
+                currentSetName = newSetName
+                wordList = []
+                saveCurrentSet()
+                loadAvailableSets()
+                newSetName = ""
+            }
+        }
         .onChange(of: wordList) { _ in
-            saveState()
+            saveCurrentSet()
         }
         .onChange(of: replaceSpacesWithUnderscore) { _ in
-            saveState()
+            saveCurrentSet()
         }
         .onChange(of: attachSharpTag) { _ in
-            saveState()
+            saveCurrentSet()
         }
         .onChange(of: generateCombinations) { _ in
-            saveState()
+            saveCurrentSet()
         }
         .padding()
     }
