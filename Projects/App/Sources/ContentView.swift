@@ -11,6 +11,23 @@ struct ContentView: View {
 
     @State private var clipboardWords: [String] = []
     
+    private func saveState() {
+        TagStorageManager.shared.saveWords(wordList)
+        TagStorageManager.shared.saveSettings(
+            replaceSpaces: replaceSpacesWithUnderscore,
+            attachSharp: attachSharpTag,
+            generateCombinations: generateCombinations
+        )
+    }
+    
+    private func loadState() {
+        wordList = TagStorageManager.shared.loadWords()
+        let settings = TagStorageManager.shared.loadSettings()
+        replaceSpacesWithUnderscore = settings.replaceSpaces
+        attachSharpTag = settings.attachSharp
+        generateCombinations = settings.generateCombinations
+    }
+    
     var body: some View {
         VStack {
             TextField("Enter a word...", text: $inputText)
@@ -133,12 +150,25 @@ struct ContentView: View {
             }
         }
         .onAppear {
+            loadState()
             checkClipboard()
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text("'\(duplicateWord)' is already in the list")
+        }
+        .onChange(of: wordList) { _ in
+            saveState()
+        }
+        .onChange(of: replaceSpacesWithUnderscore) { _ in
+            saveState()
+        }
+        .onChange(of: attachSharpTag) { _ in
+            saveState()
+        }
+        .onChange(of: generateCombinations) { _ in
+            saveState()
         }
         .padding()
     }
