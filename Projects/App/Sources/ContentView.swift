@@ -75,17 +75,17 @@ struct ContentView: View {
             }
             .padding()
             
-            HStack {
-                Text(generatedTags)
-                    .padding(5)
-                    .background(Color.blue.opacity(0.2))
-                    .cornerRadius(8)
-                    .onLongPressGesture {
-                        UIPasteboard.general.string = generatedTags
-                        showingCopiedAlert = true
-                    }
-                
-                if !generatedTags.isEmpty {
+            if !generatedTags.isEmpty {
+                HStack {
+                    Text(generatedTags)
+                        .padding(5)
+                        .background(Color.blue.opacity(0.2))
+                        .cornerRadius(8)
+                        .onLongPressGesture {
+                            UIPasteboard.general.string = generatedTags
+                            showingCopiedAlert = true
+                        }
+                    
                     Button(action: {
                         UIPasteboard.general.string = generatedTags
                         showingCopiedAlert = true
@@ -109,28 +109,28 @@ struct ContentView: View {
                     }
                     .disabled(generatedTags.isEmpty)
                 }
-            }
-            .padding()
-            .overlay(
-                Group {
-                    if showingCopiedAlert {
-                        VStack {
-                            Spacer()
-                            Text("Tags copied!")
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(Color.black.opacity(0.75))
-                                .cornerRadius(10)
-                                .transition(.move(edge: .bottom))
-                                .onAppear {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        showingCopiedAlert = false
+                .padding()
+                .overlay(
+                    Group {
+                        if showingCopiedAlert {
+                            VStack {
+                                Spacer()
+                                Text("Tags copied!")
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(Color.black.opacity(0.75))
+                                    .cornerRadius(10)
+                                    .transition(.move(edge: .bottom))
+                                    .onAppear {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            showingCopiedAlert = false
+                                        }
                                     }
-                                }
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
         .onAppear {
             checkClipboard()
