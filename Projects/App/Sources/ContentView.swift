@@ -8,6 +8,8 @@ struct ContentView: View {
     @State private var attachSharpTag: Bool = false
     @State private var generateCombinations: Bool = false
     @State private var showingCopiedAlert = false
+
+    @State private var clipboardWords: [String] = []
     
     var body: some View {
         VStack {
@@ -130,6 +132,9 @@ struct ContentView: View {
                 }
             )
         }
+        .onAppear {
+            checkClipboard()
+        }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -198,6 +203,48 @@ struct ContentView: View {
         }
         
         return combinations
+    }
+    
+    private func checkClipboard() {
+        guard let clipboardText = UIPasteboard.general.string else { return }
+        let parsedWords = parseClipboardText(clipboardText)
+        
+        guard !parsedWords.isEmpty else {
+            return
+        }
+        
+        clipboardWords = parsedWords
+        
+        importClipboardWords()
+    }
+    
+    private func parseClipboardText(_ text: String) -> [String] {
+        // Split by common separators (comma, space, newline)
+        let words = text.components(separatedBy: CharacterSet(charactersIn: ", \n"))
+            .map { word -> String in
+                var processed = word.trimmingCharacters(in: .whitespacesAndNewlines)
+                // Remove # if present
+                if processed.hasPrefix("#") {
+                    processed = String(processed.dropFirst())
+                }
+                // Replace underscores with spaces if needed
+                if !replaceSpacesWithUnderscore {
+                    processed = processed.replacingOccurrences(of: "_", with: " ")
+                }
+                return processed
+            }
+            .filter { !$0.isEmpty }
+        
+        return words
+    }
+    
+    private func importClipboardWords() {
+        for word in clipboardWords {
+            if !wordList.contains(word) {
+                wordList.append(word)
+            }
+        }
+        clipboardWords.removeAll()
     }
 }
 
