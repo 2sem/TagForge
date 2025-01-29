@@ -80,22 +80,66 @@ struct ContentView: View {
             }
             .padding()
             
-            List {
-                ForEach(wordList, id: \.self) { word in
-                    HStack {
-                        Text(word)
-                        Spacer()
-                        Button(action: {
-                            deleteWord(word: word)
-                        }) {
-                            Image(systemName: "xmark")
-                                .foregroundColor(.red)
+            if wordList.isEmpty, !availableSets.isEmpty {
+                VStack(spacing: 16) {
+                    Text("No words in the current set")
+                        .foregroundColor(.gray)
+                        .italic()
+                    
+                    Menu {
+                        if availableSets.isEmpty {
+                            Text("No saved sets")
+                                .foregroundColor(.gray)
+                        } else {
+                            ForEach(availableSets, id: \.name) { set in
+                                Button(set.name) {
+                                    loadSet(named: set.name)
+                                }
+                            }
                         }
+                    } label: {
+                        HStack {
+                            Image(systemName: "folder")
+                            Text("Select existing set")
+                            Image(systemName: "chevron.down")
+                        }
+                        .padding()
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                    
+                    Button(action: {
+                        showingSetNameDialog = true
+                    }) {
+                        HStack {
+                            Image(systemName: "plus")
+                            Text("Create new set")
+                        }
+                        .padding()
+                        .background(Color.green.opacity(0.1))
+                        .cornerRadius(8)
                     }
                 }
-                .onDelete(perform: deleteWords)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding()
+            } else {
+                List {
+                    ForEach(wordList, id: \.self) { word in
+                        HStack {
+                            Text(word)
+                            Spacer()
+                            Button(action: {
+                                deleteWord(word: word)
+                            }) {
+                                Image(systemName: "xmark")
+                                    .foregroundColor(.red)
+                            }
+                        }
+                    }
+                    .onDelete(perform: deleteWords)
+                }
+                .padding()
             }
-            .padding()
             
             HStack {
                 HStack {
