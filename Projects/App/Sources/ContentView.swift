@@ -80,6 +80,11 @@ struct ContentView: View {
             HStack {
                 TextField("Enter a word...", text: $inputText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .onSubmit {
+                        addWord()
+                    }
+                    .submitLabel(.done)
+                    .keyboardType(.default)
                 
                 Button(action: {
                     addWord()
