@@ -87,7 +87,7 @@ struct ContentView: View {
                         addWord()
                         isinputTextFocused = true
                     }
-                    .submitLabel(.done)
+                    .submitLabel(.send)
                     .keyboardType(.default)
                 
                 Button(action: {
