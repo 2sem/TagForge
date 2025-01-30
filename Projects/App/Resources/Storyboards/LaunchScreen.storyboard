@@ -16,13 +16,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="LaunchLogo" translatesAutoresizingMaskIntoConstraints="NO" id="TtW-La-5M0">
-                                <rect key="frame" x="76" y="362" width="240" height="128"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchLogo" translatesAutoresizingMaskIntoConstraints="NO" id="TtW-La-5M0">
+                                <rect key="frame" x="32" y="91" width="329" height="695"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" red="0.1234685853" green="0.17383149270000001" blue="0.27844321729999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstItem="TtW-La-5M0" firstAttribute="height" relation="lessThanOrEqual" secondItem="vDu-zF-Fre" secondAttribute="height" constant="-64" id="5WJ-df-7Dg"/>
+                            <constraint firstItem="TtW-La-5M0" firstAttribute="centerX" secondItem="vDu-zF-Fre" secondAttribute="centerX" id="6cH-0t-jXm"/>
+                            <constraint firstItem="TtW-La-5M0" firstAttribute="centerY" secondItem="vDu-zF-Fre" secondAttribute="centerY" id="FYQ-ZS-nnV"/>
+                            <constraint firstItem="TtW-La-5M0" firstAttribute="width" relation="lessThanOrEqual" secondItem="vDu-zF-Fre" secondAttribute="width" constant="-64" id="Xi2-7I-gZb"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
