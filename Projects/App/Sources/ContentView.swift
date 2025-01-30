@@ -68,10 +68,11 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Button {
+                
+                Button(action: {
                     showingSetNameDialog = true
-                } label: {
-                    Image(systemName: "document.badge.plus")
+                }) {
+                    Image(systemName: "doc.badge.plus")
                 }
             }
             .padding()
@@ -79,6 +80,7 @@ struct ContentView: View {
             HStack {
                 TextField("Enter a word...", text: $inputText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                
                 Button(action: {
                     addWord()
                 }) {
