@@ -71,14 +71,15 @@ struct ContentView: View {
             }
             .padding()
             
-            TextField("Enter a word...", text: $inputText)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            Button("Add Word") {
-                addWord()
+            HStack {
+                TextField("Enter a word...", text: $inputText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Button(action: {
+                    addWord()
+                }) {
+                    Image(systemName: "plus")
+                }
             }
-            .padding()
             
             if wordList.isEmpty, !availableSets.isEmpty {
                 VStack(spacing: 16) {
