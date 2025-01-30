@@ -88,11 +88,12 @@ struct ContentView: View {
                 }
             }
             
-            if wordList.isEmpty, !availableSets.isEmpty {
+            if wordList.isEmpty {
                 VStack(spacing: 16) {
-                    Text("No words in the current set")
+                    Text("No words in the current set.\nAdd words.")
                         .foregroundColor(.gray)
                         .italic()
+                        .multilineTextAlignment(.center)
                     
                     if availableSets.count > 1 {
                         Menu {
@@ -111,18 +112,6 @@ struct ContentView: View {
                             .background(Color.blue.opacity(0.1))
                             .cornerRadius(8)
                         }
-                    }
-                    
-                    Button(action: {
-                        showingSetNameDialog = true
-                    }) {
-                        HStack {
-                            Image(systemName: "plus")
-                            Text("Create new set")
-                        }
-                        .padding()
-                        .background(Color.green.opacity(0.1))
-                        .cornerRadius(8)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
