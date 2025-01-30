@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var inputText: String = ""
+    @FocusState var isinputTextFocused: Bool
+    
     @State private var wordList: [String] = []
     @State private var generatedTags: String = ""
     @State private var replaceSpacesWithUnderscore: Bool = false
@@ -80,8 +82,10 @@ struct ContentView: View {
             HStack {
                 TextField("Enter a word...", text: $inputText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($isinputTextFocused)
                     .onSubmit {
                         addWord()
+                        isinputTextFocused = true
                     }
                     .submitLabel(.done)
                     .keyboardType(.default)
