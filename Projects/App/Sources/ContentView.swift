@@ -92,26 +92,23 @@ struct ContentView: View {
                         .foregroundColor(.gray)
                         .italic()
                     
-                    Menu {
-                        if availableSets.isEmpty {
-                            Text("No saved sets")
-                                .foregroundColor(.gray)
-                        } else {
+                    if availableSets.count > 1 {
+                        Menu {
                             ForEach(availableSets, id: \.name) { set in
                                 Button(set.name) {
                                     loadSet(named: set.name)
                                 }
                             }
+                        } label: {
+                            HStack {
+                                Image(systemName: "folder")
+                                Text("Select existing set")
+                                Image(systemName: "chevron.down")
+                            }
+                            .padding()
+                            .background(Color.blue.opacity(0.1))
+                            .cornerRadius(8)
                         }
-                    } label: {
-                        HStack {
-                            Image(systemName: "folder")
-                            Text("Select existing set")
-                            Image(systemName: "chevron.down")
-                        }
-                        .padding()
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(8)
                     }
                     
                     Button(action: {
