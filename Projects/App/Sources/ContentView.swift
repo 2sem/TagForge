@@ -60,13 +60,18 @@ struct ContentView: View {
                     }
                 } label: {
                     HStack {
-                        Text(currentSetName.isEmpty ? "Select Set" : currentSetName)
-                        Image(systemName: "chevron.down")
+                        Image(systemName: "bookmark.fill")
+                        Text(currentSetName.isEmpty ? "Default" : currentSetName)
+//                        Image(systemName: "chevron.down")
                     }
                 }
                 
-                Button("New Set") {
+                Spacer()
+                
+                Button {
                     showingSetNameDialog = true
+                } label: {
+                    Image(systemName: "document.badge.plus")
                 }
             }
             .padding()
