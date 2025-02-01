@@ -34,16 +34,22 @@ struct ContentView: View {
         )
     }
     
-    private func loadSet(named name: String) {
-        guard let set = TagStorageManager.shared.getWordSet(named: name) else { return }
-        
+    private func load(worSet set: WordSet) {
         currentSetName = set.name
         wordList = set.words
         replaceSpacesWithUnderscore = set.settings.replaceSpaces
         attachSharpTag = set.settings.attachSharp
         generateCombinations = set.settings.generateCombinations
         
-        TagStorageManager.shared.setCurrentSet(name: name)
+        TagStorageManager.shared.setCurrentSet(name: set.name)
+    }
+    
+    private func loadWordSet(named name: String) {
+        guard let loadedWordSet = TagStorageManager.shared.getWordSet(named: name) else {
+            return
+        }
+        
+        load(worSet: loadedWordSet)
     }
     
     private func loadAvailableSets() {
@@ -52,19 +58,16 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            // Add set selection menu
             HStack {
-                Menu {
-                    ForEach(availableSets, id: \.name) { set in
-                        Button(set.name) {
-                            loadSet(named: set.name)
-                        }
+                WordSetMenu(
+                    availableSets: availableSets,
+                    onSelectWordSet: { set in
+                        load(worSet: set)
                     }
-                } label: {
+                ) {
                     HStack {
-                        Image(systemName: "bookmark.fill")
+                        Image(systemName: "chevron.down")
                         Text(currentSetName.isEmpty ? "Default" : currentSetName)
-//                        Image(systemName: "chevron.down")
                     }
                 }
                 
@@ -76,8 +79,7 @@ struct ContentView: View {
                 }) {
                     Image(systemName: "doc.badge.plus")
                 }
-            }
-            .padding()
+            }.padding()
             
             HStack {
                 TextField("Enter a word...", text: $inputText)
@@ -105,13 +107,10 @@ struct ContentView: View {
                         .multilineTextAlignment(.center)
                     
                     if availableSets.count > 1 {
-                        Menu {
-                            ForEach(availableSets, id: \.name) { set in
-                                Button(set.name) {
-                                    loadSet(named: set.name)
-                                }
-                            }
-                        } label: {
+                        WordSetMenu(availableSets: availableSets,
+                                    onSelectWordSet: { set in
+                            load(worSet: set)
+                        }) {
                             HStack {
                                 Image(systemName: "folder")
                                 Text("Select existing set")
@@ -240,7 +239,7 @@ struct ContentView: View {
         .onAppear {
             loadAvailableSets()
             if let currentName = TagStorageManager.shared.getCurrentSetName() {
-                loadSet(named: currentName)
+                loadWordSet(named: currentName)
             }
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {

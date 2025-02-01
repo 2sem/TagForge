@@ -22,11 +22,10 @@ struct WordSet: Codable {
 class TagStorageManager {
     static let shared = TagStorageManager()
     private let defaults = UserDefaults.standard
+    private var cachedWordSets: [WordSet]? = nil
     
     private let WORD_SETS_KEY = "wordSets"
     private let CURRENT_SET_KEY = "currentSetName"
-    
-    private init() {}
     
     func saveWordSet(name: String, words: [String], settings: WordSet.Settings) {
         var wordSets = getAllWordSets()
@@ -41,15 +40,23 @@ class TagStorageManager {
         
         if let encoded = try? JSONEncoder().encode(wordSets) {
             defaults.set(encoded, forKey: WORD_SETS_KEY)
+            cachedWordSets = wordSets
         }
     }
     
     func getAllWordSets() -> [WordSet] {
+        if let cachedWordSets {
+            return cachedWordSets
+        }
+        
         guard let data = defaults.data(forKey: WORD_SETS_KEY),
-              let wordSets = try? JSONDecoder().decode([WordSet].self, from: data) else {
+              let storedWordSets = try? JSONDecoder().decode([WordSet].self, from: data) else {
             return []
         }
-        return wordSets
+        
+        cachedWordSets = storedWordSets
+        
+        return storedWordSets
     }
     
     func getWordSet(named name: String) -> WordSet? {
