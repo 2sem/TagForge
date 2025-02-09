@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct WordSetMenu<Label>: View where Label : View {
-    var availableSets: [WordSet]
-    var onSelectWordSet: (WordSet) -> Void
+    var availableSets: [WordSetModel]
+    var onSelectWordSet: (WordSetModel) -> Void
     @ViewBuilder var label: () -> Label
 
     var body: some View {

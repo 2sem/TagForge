@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     @State private var inputText: String = ""
@@ -16,32 +17,27 @@ struct ContentView: View {
     @State private var currentSetName: String = ""
     @State private var showingSetNameDialog = false
     @State private var newSetName: String = ""
-    @State private var availableSets: [WordSet] = []
     
     private func saveCurrentSet() {
         guard !currentSetName.isEmpty else { return }
         
-        let settings = WordSet.Settings(
+        TagStorageManager.shared.saveWordSet(
+            name: currentSetName,
+            words: wordList,
             replaceSpaces: replaceSpacesWithUnderscore,
             attachSharp: attachSharpTag,
             generateCombinations: generateCombinations
         )
-        
-        TagStorageManager.shared.saveWordSet(
-            name: currentSetName,
-            words: wordList,
-            settings: settings
-        )
     }
     
-    private func load(worSet set: WordSet) {
+    private func load(wordSet set: WordSetModel) {
         currentSetName = set.name
         wordList = set.words
-        replaceSpacesWithUnderscore = set.settings.replaceSpaces
-        attachSharpTag = set.settings.attachSharp
-        generateCombinations = set.settings.generateCombinations
+        replaceSpacesWithUnderscore = set.replaceSpaces
+        attachSharpTag = set.attachSharp
+        generateCombinations = set.generateCombinations
         
-        TagStorageManager.shared.setCurrentSet(name: set.name)
+        TagStorageManager.shared.currentSet = set
     }
     
     private func loadWordSet(named name: String) {
@@ -49,20 +45,16 @@ struct ContentView: View {
             return
         }
         
-        load(worSet: loadedWordSet)
-    }
-    
-    private func loadAvailableSets() {
-        availableSets = TagStorageManager.shared.getAllWordSets()
+        load(wordSet: loadedWordSet)
     }
     
     var body: some View {
         VStack {
             HStack {
                 WordSetMenu(
-                    availableSets: availableSets,
+                    availableSets: TagStorageManager.shared.wordSets,
                     onSelectWordSet: { set in
-                        load(worSet: set)
+                        load(wordSet: set)
                     }
                 ) {
                     HStack {
@@ -106,10 +98,10 @@ struct ContentView: View {
                         .italic()
                         .multilineTextAlignment(.center)
                     
-                    if availableSets.count > 1 {
-                        WordSetMenu(availableSets: availableSets,
+                    if TagStorageManager.shared.wordSets.count > 1 {
+                        WordSetMenu(availableSets: TagStorageManager.shared.wordSets,
                                     onSelectWordSet: { set in
-                            load(worSet: set)
+                            load(wordSet: set)
                         }) {
                             HStack {
                                 Image(systemName: "folder")
@@ -237,9 +229,8 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            loadAvailableSets()
-            if let currentName = TagStorageManager.shared.getCurrentSetName() {
-                loadWordSet(named: currentName)
+            if let currentSet = TagStorageManager.shared.currentSet {
+                loadWordSet(named: currentSet.name)
             }
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
@@ -254,7 +245,6 @@ struct ContentView: View {
                 currentSetName = newSetName
                 wordList = []
                 saveCurrentSet()
-                loadAvailableSets()
                 newSetName = ""
             }
         }
