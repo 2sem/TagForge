@@ -2,106 +2,62 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @StateObject private var viewModel = MainViewModel()
     @State private var inputText: String = ""
-    @FocusState var isinputTextFocused: Bool
-    
-    @State private var wordList: [String] = []
-    @State private var generatedTags: String = ""
-    @State private var replaceSpacesWithUnderscore: Bool = false
-    @State private var attachSharpTag: Bool = false
-    @State private var generateCombinations: Bool = false
-    @State private var showingCopiedAlert = false
-
-    @State private var clipboardWords: [String] = []
-    
-    @State private var currentSetName: String = ""
+    @FocusState private var isInputFocused: Bool
     @State private var showingSetNameDialog = false
+    @State private var showingDuplicateAlert = false
+    @State private var showingCopiedAlert = false
     @State private var newSetName: String = ""
-    
-    private func saveCurrentSet() {
-        guard !currentSetName.isEmpty else { return }
-        
-        TagStorageManager.shared.saveWordSet(
-            name: currentSetName,
-            words: wordList,
-            replaceSpaces: replaceSpacesWithUnderscore,
-            attachSharp: attachSharpTag,
-            generateCombinations: generateCombinations
-        )
-    }
-    
-    private func load(wordSet set: WordSetModel) {
-        currentSetName = set.name
-        wordList = set.words
-        replaceSpacesWithUnderscore = set.replaceSpaces
-        attachSharpTag = set.attachSharp
-        generateCombinations = set.generateCombinations
-        
-        TagStorageManager.shared.currentSet = set
-    }
-    
-    private func loadWordSet(named name: String) {
-        guard let loadedWordSet = TagStorageManager.shared.getWordSet(named: name) else {
-            return
-        }
-        
-        load(wordSet: loadedWordSet)
-    }
+    @State private var duplicateWord: String = ""
+    @State private var clipboardWords: [String] = []
     
     var body: some View {
         VStack {
+            // Header with set selection
             HStack {
                 WordSetMenu(
-                    availableSets: TagStorageManager.shared.wordSets,
-                    onSelectWordSet: { set in
-                        load(wordSet: set)
-                    }
+                    availableSets: viewModel.wordSets,
+                    onSelectWordSet: { viewModel.loadWord(set: $0) }
                 ) {
                     HStack {
                         Image(systemName: "chevron.down")
-                        Text(currentSetName.isEmpty ? "Default" : currentSetName)
+                        Text(viewModel.currentWordSet.name.isEmpty ? "Default" : viewModel.currentWordSet.name)
                     }
                 }
-                
                 Spacer()
-                
-                
-                Button(action: {
-                    showingSetNameDialog = true
-                }) {
+                Button(action: { showingSetNameDialog = true }) {
                     Image(systemName: "doc.badge.plus")
                 }
             }.padding()
             
+            // Input field
             HStack {
                 TextField("Enter a word...", text: $inputText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .focused($isinputTextFocused)
+                    .focused($isInputFocused)
                     .onSubmit {
                         addWord()
-                        isinputTextFocused = true
+                        isInputFocused = true
                     }
                     .submitLabel(.send)
-                    .keyboardType(.default)
-                
-                Button(action: {
-                    addWord()
-                }) {
+                Button(action: addWord) {
                     Image(systemName: "plus")
                 }
             }
             
-            if wordList.isEmpty {
+            // Word list
+            if viewModel.currentWordSet.words.isEmpty {
                 VStack(spacing: 16) {
                     Text("No words in the current set.\nAdd words.")
                         .foregroundColor(.gray)
                         .italic()
                         .multilineTextAlignment(.center)
                     
-                    if TagStorageManager.shared.wordSets.count > 1 {
-                        WordSetMenu(availableSets: TagStorageManager.shared.wordSets,
+                    if viewModel.wordSets.count > 1 {
+                        WordSetMenu(availableSets: viewModel.wordSets,
                                     onSelectWordSet: { set in
-                            load(wordSet: set)
+                            viewModel.loadWord(set: set)
                         }) {
                             HStack {
                                 Image(systemName: "folder")
@@ -118,72 +74,73 @@ struct ContentView: View {
                 .padding()
             } else {
                 List {
-                    ForEach(wordList, id: \.self) { word in
+                    ForEach(viewModel.currentWordSet.words, id: \.self) { word in
                         HStack {
                             Text(word)
                             Spacer()
-                            Button(action: {
-                                deleteWord(word: word)
-                            }) {
+                            Button(action: { viewModel.deleteWord(word) }) {
                                 Image(systemName: "xmark")
                                     .foregroundColor(.red)
                             }
                         }
                     }
-                    .onDelete(perform: deleteWords)
+                    .onDelete(perform: viewModel.deleteWords)
                 }
                 .padding()
             }
             
+            // Options
             HStack {
                 HStack {
-                    Image(systemName: replaceSpacesWithUnderscore ? "checkmark.square" : "square")
+                    Image(systemName: viewModel.currentWordSet.replaceSpaces ? "checkmark.square" : "square")
                     Text("Space to _")
                 }
                 .onTapGesture {
-                    replaceSpacesWithUnderscore.toggle()
+                    viewModel.currentWordSet.replaceSpaces.toggle()
                 }
+                
                 HStack {
-                    Image(systemName: attachSharpTag ? "checkmark.square" : "square")
+                    Image(systemName: viewModel.currentWordSet.attachSharp ? "checkmark.square" : "square")
                     Text("#")
                 }
                 .onTapGesture {
-                    attachSharpTag.toggle()
-                    if attachSharpTag {
-                        replaceSpacesWithUnderscore = true
+                    viewModel.currentWordSet.attachSharp.toggle()
+                    if viewModel.currentWordSet.attachSharp {
+                        viewModel.currentWordSet.replaceSpaces = true
                     }
                 }
                 
                 HStack {
-                    Image(systemName: generateCombinations ? "checkmark.square" : "square")
+                    Image(systemName: viewModel.currentWordSet.generateCombinations ? "checkmark.square" : "square")
                     Text("Combinations")
                 }
                 .onTapGesture {
-                    generateCombinations.toggle()
+                    viewModel.currentWordSet.generateCombinations.toggle()
                 }
                 
                 Spacer()
             }
             .padding()
             
+            // Generate button and results
             Button("Generate Tags") {
-                generateTags()
+                viewModel.generateTags()
             }
             .padding()
             
-            if !generatedTags.isEmpty {
+            if !viewModel.generatedTags.isEmpty {
                 HStack {
-                    Text(generatedTags)
+                    Text(viewModel.generatedTags)
                         .padding(5)
                         .background(Color.blue.opacity(0.2))
                         .cornerRadius(8)
                         .onLongPressGesture {
-                            UIPasteboard.general.string = generatedTags
+                            UIPasteboard.general.string = viewModel.generatedTags
                             showingCopiedAlert = true
                         }
                     
                     Button(action: {
-                        UIPasteboard.general.string = generatedTags
+                        UIPasteboard.general.string = viewModel.generatedTags
                         showingCopiedAlert = true
                     }) {
                         Image(systemName: "doc.on.doc")
@@ -192,7 +149,7 @@ struct ContentView: View {
                     .padding(.leading, 8)
                     
                     Button(action: {
-                        let activityVC = UIActivityViewController(activityItems: [generatedTags], applicationActivities: nil)
+                        let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
                         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                            let window = windowScene.windows.first,
                            let rootVC = window.rootViewController {
@@ -203,7 +160,7 @@ struct ContentView: View {
                         Image(systemName: "square.and.arrow.up")
                             .foregroundColor(.blue)
                     }
-                    .disabled(generatedTags.isEmpty)
+                    .disabled(viewModel.generatedTags.isEmpty)
                 }
                 .padding()
                 .overlay(
@@ -228,10 +185,8 @@ struct ContentView: View {
                 )
             }
         }
-        .onAppear {
-            if let currentSet = TagStorageManager.shared.currentSet {
-                loadWordSet(named: currentSet.name)
-            }
+        .onAppear{
+//            viewModel.loadWordSets()
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
             Button("OK", role: .cancel) { }
@@ -242,89 +197,23 @@ struct ContentView: View {
             TextField("Set Name", text: $newSetName)
             Button("Cancel", role: .cancel) { }
             Button("Save") {
-                currentSetName = newSetName
-                wordList = []
-                saveCurrentSet()
+                viewModel.createNewSet(name: newSetName)
                 newSetName = ""
             }
         }
-        .onChange(of: wordList) { _ in
-            saveCurrentSet()
-        }
-        .onChange(of: replaceSpacesWithUnderscore) { _ in
-            saveCurrentSet()
-        }
-        .onChange(of: attachSharpTag) { _ in
-            saveCurrentSet()
-        }
-        .onChange(of: generateCombinations) { _ in
-            saveCurrentSet()
-        }
         .padding()
+        
     }
-    
-    @State private var showingDuplicateAlert = false
-    @State private var duplicateWord = ""
     
     private func addWord() {
-        let trimmedText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedText.isEmpty else {
-            return
-        }
-        guard !wordList.contains(trimmedText) else {
-            duplicateWord = trimmedText
+        if !viewModel.addWord(inputText) && !inputText.isEmpty {
+            duplicateWord = inputText
             showingDuplicateAlert = true
-            return
         }
-        
-        if !wordList.contains(trimmedText) {
-            wordList.append(trimmedText)
-            inputText = ""
-        }
+        inputText = ""
     }
     
-    private func deleteWords(at offsets: IndexSet) {
-        wordList.remove(atOffsets: offsets)
-    }
-    
-    private func deleteWord(word: String) {
-        if let index = wordList.firstIndex(where: { $0 == word }) {
-            wordList.remove(at: index)
-        }
-    }
-    
-    private func generateTags() {
-        var tags = wordList.map { word in
-            var tag = word
-            if replaceSpacesWithUnderscore {
-                tag = tag.replacingOccurrences(of: " ", with: "_")
-            }
-            if attachSharpTag {
-                tag = "#" + tag
-            }
-            return tag
-        }
-        
-        if generateCombinations {
-            let combinations = generateCombinations(of: tags)
-            tags.append(contentsOf: combinations)
-        }
-        
-        generatedTags = tags.joined(separator: ", ")
-    }
-    
-    private func generateCombinations(of words: [String]) -> [String] {
-        var combinations = [String]()
-        
-        for length in 2...words.count {
-            for combination in words.combinations(ofLength: length) {
-                combinations.append(combination.joined())
-            }
-        }
-        
-        return combinations
-    }
-    
+    // Keeping clipboard-related functions unchanged
     private func checkClipboard() {
         guard let clipboardText = UIPasteboard.general.string else { return }
         let parsedWords = parseClipboardText(clipboardText)
@@ -348,7 +237,7 @@ struct ContentView: View {
                     processed = String(processed.dropFirst())
                 }
                 // Replace underscores with spaces if needed
-                if !replaceSpacesWithUnderscore {
+                if !viewModel.currentWordSet.replaceSpaces {
                     processed = processed.replacingOccurrences(of: "_", with: " ")
                 }
                 return processed
@@ -360,8 +249,8 @@ struct ContentView: View {
     
     private func importClipboardWords() {
         for word in clipboardWords {
-            if !wordList.contains(word) {
-                wordList.append(word)
+            if !viewModel.currentWordSet.words.contains(word) {
+                viewModel.currentWordSet.words.append(word)
             }
         }
         clipboardWords.removeAll()
