@@ -11,7 +11,7 @@ import SwiftData
 @Model
 final class WordSetModel {
     var name: String
-    var words: [String]
+    @Relationship var words: [String]
     var replaceSpaces: Bool
     var attachSharp: Bool
     var generateCombinations: Bool
