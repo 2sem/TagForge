@@ -40,23 +40,38 @@ class MainViewModel: ObservableObject {
     
     func addWord(_ word: String) -> Bool {
         let trimmedWord = word.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedWord.isEmpty, !currentWordSet.words.contains(trimmedWord) else { return false }
+        let words = currentWordSet.words ?? []
         
-        currentWordSet.words.append(trimmedWord)
+        guard !trimmedWord.isEmpty, !words.contains(where: { $0.text == trimmedWord }) else { return false }
+        
+        let newWord = WordModel(text: trimmedWord, wordSet: currentWordSet)
+        currentWordSet.words?.append(newWord)
         storageManager.save()
         return true
     }
     
     func deleteWord(_ word: String) {
-        if let index = currentWordSet.words.firstIndex(where: { $0 == word }) {
-            currentWordSet.words.remove(at: index)
-            storageManager.save()
+        if let index = currentWordSet.words?.firstIndex(where: { $0.text == word }) {
+            guard let wordToDelete = currentWordSet.words?[index] else {
+                return
+            }
+            
+            currentWordSet.words?.remove(at: index)
+            storageManager.deleteWord(wordToDelete)
         }
     }
     
     func deleteWords(at offsets: IndexSet) {
-        currentWordSet.words.remove(atOffsets: offsets)
-        storageManager.save()
+        let wordsToDelete = offsets.compactMap { currentWordSet.words?[$0] }
+        
+        for word in wordsToDelete {
+            guard let index = currentWordSet.words?.firstIndex(of: word) else {
+                continue
+            }
+            
+            currentWordSet.words?.remove(at: index)
+            storageManager.deleteWord(word)
+        }
     }
     
     func createNewSet(name: String) {
@@ -66,8 +81,8 @@ class MainViewModel: ObservableObject {
     }
     
     func generateTags() {
-        var tags = currentWordSet.words.map { word in
-            var tag = word
+        var tags: [String] = currentWordSet.words?.map { word in
+            var tag = word.text
             if currentWordSet.replaceSpaces {
                 tag = tag.replacingOccurrences(of: " ", with: "_")
             }
@@ -75,7 +90,7 @@ class MainViewModel: ObservableObject {
                 tag = "#" + tag
             }
             return tag
-        }
+        } ?? []
         
         if currentWordSet.generateCombinations {
             tags.append(contentsOf: generateCombinations(of: tags))

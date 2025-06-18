@@ -47,7 +47,7 @@ struct ContentView: View {
             }
             
             // Word list
-            if viewModel.currentWordSet.words.isEmpty {
+            if viewModel.currentWordSet.words?.isEmpty ?? true {
                 VStack(spacing: 16) {
                     Text("No words in the current set.\nAdd words.")
                         .foregroundColor(.gray)
@@ -74,9 +74,9 @@ struct ContentView: View {
                 .padding()
             } else {
                 List {
-                    ForEach(viewModel.currentWordSet.words, id: \.self) { word in
+                    ForEach(viewModel.currentWordSet.words ?? [], id: \.text) { word in
                         HStack {
-                            Text(word)
+                            Text(word.text)
                             Spacer()
                             Button(action: { viewModel.deleteWord(word) }) {
                                 Image(systemName: "xmark")
@@ -249,9 +249,13 @@ struct ContentView: View {
     
     private func importClipboardWords() {
         for word in clipboardWords {
-            if !viewModel.currentWordSet.words.contains(word) {
-                viewModel.currentWordSet.words.append(word)
+            let isAlreadyExistingWord = viewModel.currentWordSet.words?.contains(where: { $0.text == word }) ?? false
+            
+            guard isAlreadyExistingWord else {
+                continue
             }
+            
+            viewModel.currentWordSet.words?.append(.init(text: word))
         }
         clipboardWords.removeAll()
     }

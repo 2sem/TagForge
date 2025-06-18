@@ -28,7 +28,7 @@ class WordSetManager {
     }
     
     func createWordSet(name: String = "Default", words: [String], replaceSpaces: Bool, attachSharp: Bool, generateCombinations: Bool) -> WordSetModel {
-        let newSet = WordSetModel(name: name, words: words,
+        let newSet = WordSetModel(name: name, words: words.map{ WordModel(text: $0) },
                                 replaceSpaces: replaceSpaces,
                                 attachSharp: attachSharp,
                                 generateCombinations: generateCombinations)
@@ -42,6 +42,11 @@ class WordSetManager {
     func deleteWord(set: WordSetModel) {
         modelContext.delete(set)
         
+        self.save()
+    }
+    
+    func deleteWord(_ word: WordModel) {
+        modelContext.delete(word)
         self.save()
     }
     
