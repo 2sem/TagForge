@@ -50,14 +50,10 @@ class MainViewModel: ObservableObject {
         return true
     }
     
-    func deleteWord(_ word: String) {
-        if let index = currentWordSet.words?.firstIndex(where: { $0.text == word }) {
-            guard let wordToDelete = currentWordSet.words?[index] else {
-                return
-            }
-            
+    func deleteWord(_ word: WordModel) {
+        if let index = currentWordSet.words?.firstIndex(of: word) {
             currentWordSet.words?.remove(at: index)
-            storageManager.deleteWord(wordToDelete)
+            storageManager.deleteWord(word)
         }
     }
     

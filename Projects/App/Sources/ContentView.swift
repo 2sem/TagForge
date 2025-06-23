@@ -15,63 +15,12 @@ struct ContentView: View {
     var body: some View {
         VStack {
             // Header with set selection
-            HStack {
-                WordSetMenu(
-                    availableSets: viewModel.wordSets,
-                    onSelectWordSet: { viewModel.loadWord(set: $0) }
-                ) {
-                    HStack {
-                        Image(systemName: "chevron.down")
-                        Text(viewModel.currentWordSet.name.isEmpty ? "Default" : viewModel.currentWordSet.name)
-                    }
-                }
-                Spacer()
-                Button(action: { showingSetNameDialog = true }) {
-                    Image(systemName: "doc.badge.plus")
-                }
-            }.padding()
-            
-            // Input field
-            HStack {
-                TextField("Enter a word...", text: $inputText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .focused($isInputFocused)
-                    .onSubmit {
-                        addWord()
-                        isInputFocused = true
-                    }
-                    .submitLabel(.send)
-                Button(action: addWord) {
-                    Image(systemName: "plus")
-                }
-            }
+            HeaderView()
+            InputWordView()
             
             // Word list
             if viewModel.currentWordSet.words?.isEmpty ?? true {
-                VStack(spacing: 16) {
-                    Text("No words in the current set.\nAdd words.")
-                        .foregroundColor(.gray)
-                        .italic()
-                        .multilineTextAlignment(.center)
-                    
-                    if viewModel.wordSets.count > 1 {
-                        WordSetMenu(availableSets: viewModel.wordSets,
-                                    onSelectWordSet: { set in
-                            viewModel.loadWord(set: set)
-                        }) {
-                            HStack {
-                                Image(systemName: "folder")
-                                Text("Select existing set")
-                                Image(systemName: "chevron.down")
-                            }
-                            .padding()
-                            .background(Color.blue.opacity(0.1))
-                            .cornerRadius(8)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding()
+                EmptyWordListView()
             } else {
                 List {
                     ForEach(viewModel.currentWordSet.words ?? [], id: \.text) { word in
@@ -202,7 +151,67 @@ struct ContentView: View {
             }
         }
         .padding()
-        
+    }
+    
+    private func HeaderView() -> some View {
+        HStack {
+            WordSetMenu(
+                availableSets: viewModel.wordSets,
+                onSelectWordSet: { viewModel.loadWord(set: $0) }
+            ) {
+                HStack {
+                    Image(systemName: "chevron.down")
+                    Text(viewModel.currentWordSet.name.isEmpty ? "Default" : viewModel.currentWordSet.name)
+                }
+            }
+            Spacer()
+            Button(action: { showingSetNameDialog = true }) {
+                Image(systemName: "doc.badge.plus")
+            }
+        }.padding()
+    }
+    
+    private func InputWordView() -> some View {
+        HStack {
+            TextField("Enter a word...", text: $inputText)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .focused($isInputFocused)
+                .onSubmit {
+                    addWord()
+                    isInputFocused = true
+                }
+                .submitLabel(.send)
+            Button(action: addWord) {
+                Image(systemName: "plus")
+            }
+        }
+    }
+    
+    private func EmptyWordListView() -> some View {
+        VStack(spacing: 16) {
+            Text("No words in the current set.\nAdd words.")
+                .foregroundColor(.gray)
+                .italic()
+                .multilineTextAlignment(.center)
+            
+            if viewModel.wordSets.count > 1 {
+                WordSetMenu(availableSets: viewModel.wordSets,
+                            onSelectWordSet: { set in
+                    viewModel.loadWord(set: set)
+                }) {
+                    HStack {
+                        Image(systemName: "folder")
+                        Text("Select existing set")
+                        Image(systemName: "chevron.down")
+                    }
+                    .padding()
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(8)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
     }
     
     private func addWord() {
