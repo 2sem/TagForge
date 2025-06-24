@@ -10,13 +10,13 @@ import SwiftData
 
 @Model
 final class WordSetModel {
-    var name: String
-    @Relationship(deleteRule: .cascade, inverse: \WordModel.wordSet) var words: [WordModel]?
-    var replaceSpaces: Bool
-    var attachSharp: Bool
-    var generateCombinations: Bool
+    var name: String = "" // 기본값 추가
+    @Relationship(deleteRule: .cascade, inverse: \WordModel.wordSet) var words: [WordModel]? // ...existing code...
+    var replaceSpaces: Bool = false // 기본값 추가
+    var attachSharp: Bool = false // 기본값 추가
+    var generateCombinations: Bool = false // 기본값 추가
     
-    init(name: String, words: [WordModel] = [], replaceSpaces: Bool = false, attachSharp: Bool = false, generateCombinations: Bool = false) {
+    init(name: String = "", words: [WordModel] = [], replaceSpaces: Bool = false, attachSharp: Bool = false, generateCombinations: Bool = false) { // 기본값 추가
         self.name = name
         self.words = words
         self.replaceSpaces = replaceSpaces
