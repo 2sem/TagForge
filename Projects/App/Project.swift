@@ -24,6 +24,7 @@ let project = Project(
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "TagForge",
                 "UILaunchStoryboardName": "LaunchScreen",
+                "UIBackgroundModes": ["remote-notification"]
             ]),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
