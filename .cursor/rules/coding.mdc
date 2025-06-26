@@ -1,0 +1,11 @@
+---
+description: Instruction for Coding
+globs: 
+alwaysApply: false
+---
+코딩 작성 가이드라인 입니다.
+
+# 공백 처리
+탭으로 들여쓰기
+마지막 코드 뒤에 오는 공백은 삭제
+마지막에 줄하나 추가

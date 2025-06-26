@@ -1,0 +1,21 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+답변은 항상 한국어로 해주고 불필요한 설명은 하지 마세요.
+
+# 프로젝트 구성
+Xcode: Xcode 16
+Swift: 5
+xcodeproj 충돌을 피하기 위해 Tuist로 구성
+
+# 폴더 목록
+Projects: 프로젝트 목록
+Tuist: Tuist 설정 파일들
+
+# 프로젝트 목록
+App: 앱 프로젝트
+DynamicThirdParty: 동적 라이브러리 모음
+ThirdParty: 정적 라이브러리 모음
+
