@@ -1,0 +1,8 @@
+---
+description: Instruction for Implementing CloudKit(iCloud)
+globs: 
+alwaysApply: false
+---
+
+# Refrences
+https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices

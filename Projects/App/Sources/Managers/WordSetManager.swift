@@ -16,7 +16,8 @@ class WordSetManager {
     
     private init() {
         do {
-            modelContainer = try ModelContainer(for: WordSetModel.self)
+            let config: ModelConfiguration = ModelConfiguration(cloudKitDatabase: .private("iCloud.com.toyboy2.tagforge"))
+            modelContainer = try ModelContainer(for: WordSetModel.self, WordModel.self, configurations: config)
             modelContext = modelContainer.mainContext
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")
