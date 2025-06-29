@@ -14,11 +14,12 @@ class MainViewModel: ObservableObject {
         self.storageManager = storageManager
         loadWordSets()
         // NSManagedObjectContextDidSave Notification 구독
-        storageManager.contextDidSavePublisher
+        storageManager.remoteChangePublisher
+            .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                print("WordSetManager.contextDidSave")
-                // self?.loadWordSets()
+            .sink { [weak self] (notification) in
+                print("WordSetManager.remomteChange. \(notification.userInfo)")
+                 self?.loadWordSets()
             }
             .store(in: &cancellables)
     }
@@ -36,7 +37,8 @@ class MainViewModel: ObservableObject {
             return
         }
         
-        currentWordSet = self.storageManager.createWordSet(words: [], replaceSpaces: false, attachSharp: false, generateCombinations: false)
+        let currentWordSet = self.storageManager.createWordSet(words: [], replaceSpaces: false, attachSharp: false, generateCombinations: false)
+        self.currentWordSet = currentWordSet
         wordSets.append(currentWordSet)
     }
     
