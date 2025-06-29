@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftData
+import Combine
+import CoreData
 
 @MainActor
 class WordSetManager {
@@ -22,6 +24,18 @@ class WordSetManager {
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")
         }
+    }
+    
+    // NSManagedObjectContextDidSave Notification Publisher
+    var contextDidSavePublisher: AnyPublisher<Notification, Never> {
+//        guard let nsContext = (modelContext as? NSObject)?.value(forKey: "context") as? NSManagedObjectContext else {
+//            // fallback: never emit
+//            return Empty().eraseToAnyPublisher()
+//        }
+        
+        return NotificationCenter.default
+            .publisher(for: NSNotification.Name.NSManagedObjectContextDidSaveObjectIDs)
+            .eraseToAnyPublisher()
     }
     
     func loadWordSets() -> [WordSetModel] {

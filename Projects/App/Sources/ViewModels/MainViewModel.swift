@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 @MainActor
 class MainViewModel: ObservableObject {
@@ -7,10 +8,19 @@ class MainViewModel: ObservableObject {
     @Published var generatedTags: String = ""
     
     private let storageManager: WordSetManager
+    private var cancellables = Swift.Set<AnyCancellable>()
     
     init(storageManager: WordSetManager = .shared) {
         self.storageManager = storageManager
         loadWordSets()
+        // NSManagedObjectContextDidSave Notification 구독
+        storageManager.contextDidSavePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("WordSetManager.contextDidSave")
+                // self?.loadWordSets()
+            }
+            .store(in: &cancellables)
     }
     
     func loadWordSets() {
