@@ -14,125 +14,11 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            // Header with set selection
             HeaderView()
             InputWordView()
-            
-            // Word list
-            if viewModel.currentWordSet.words?.isEmpty ?? true {
-                EmptyWordListView()
-            } else {
-                List {
-                    ForEach(viewModel.currentWordSet.words ?? [], id: \.text) { word in
-                        HStack {
-                            Text(word.text)
-                            Spacer()
-                            Button(action: { viewModel.deleteWord(word) }) {
-                                Image(systemName: "xmark")
-                                    .foregroundColor(.red)
-                            }
-                        }
-                    }
-                    .onDelete(perform: viewModel.deleteWords)
-                }
-                .padding()
-            }
-            
-            // Options
-            HStack {
-                HStack {
-                    Image(systemName: viewModel.currentWordSet.replaceSpaces ? "checkmark.square" : "square")
-                    Text("Space to _")
-                }
-                .onTapGesture {
-                    viewModel.currentWordSet.replaceSpaces.toggle()
-                }
-                
-                HStack {
-                    Image(systemName: viewModel.currentWordSet.attachSharp ? "checkmark.square" : "square")
-                    Text("#")
-                }
-                .onTapGesture {
-                    viewModel.currentWordSet.attachSharp.toggle()
-                    if viewModel.currentWordSet.attachSharp {
-                        viewModel.currentWordSet.replaceSpaces = true
-                    }
-                }
-                
-                HStack {
-                    Image(systemName: viewModel.currentWordSet.generateCombinations ? "checkmark.square" : "square")
-                    Text("Combinations")
-                }
-                .onTapGesture {
-                    viewModel.currentWordSet.generateCombinations.toggle()
-                }
-                
-                Spacer()
-            }
-            .padding()
-            
-            // Generate button and results
-            Button("Generate Tags") {
-                viewModel.generateTags()
-            }
-            .padding()
-            
-            if !viewModel.generatedTags.isEmpty {
-                HStack {
-                    Text(viewModel.generatedTags)
-                        .padding(5)
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(8)
-                        .onLongPressGesture {
-                            UIPasteboard.general.string = viewModel.generatedTags
-                            showingCopiedAlert = true
-                        }
-                    
-                    Button(action: {
-                        UIPasteboard.general.string = viewModel.generatedTags
-                        showingCopiedAlert = true
-                    }) {
-                        Image(systemName: "doc.on.doc")
-                            .foregroundColor(.blue)
-                    }
-                    .padding(.leading, 8)
-                    
-                    Button(action: {
-                        let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
-                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                           let window = windowScene.windows.first,
-                           let rootVC = window.rootViewController {
-                            activityVC.popoverPresentationController?.sourceView = rootVC.view
-                            rootVC.present(activityVC, animated: true)
-                        }
-                    }) {
-                        Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(.blue)
-                    }
-                    .disabled(viewModel.generatedTags.isEmpty)
-                }
-                .padding()
-                .overlay(
-                    Group {
-                        if showingCopiedAlert {
-                            VStack {
-                                Spacer()
-                                Text("Tags copied!")
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .background(Color.black.opacity(0.75))
-                                    .cornerRadius(10)
-                                    .transition(.move(edge: .bottom))
-                                    .onAppear {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                            showingCopiedAlert = false
-                                        }
-                                    }
-                            }
-                        }
-                    }
-                )
-            }
+            WordListView()
+            OptionsView()
+            GenerateTagsView()
         }
         .onAppear{
 //            viewModel.loadWordSets()
@@ -183,6 +69,123 @@ struct ContentView: View {
                 .submitLabel(.send)
             Button(action: addWord) {
                 Image(systemName: "plus")
+            }
+        }
+    }
+    
+    private func WordListView() -> some View {
+        Group {
+            if viewModel.currentWordSet.words?.isEmpty ?? true {
+                EmptyWordListView()
+            } else {
+                List {
+                    ForEach(viewModel.currentWordSet.words ?? [], id: \.text) { word in
+                        HStack {
+                            Text(word.text)
+                            Spacer()
+                            Button(action: { viewModel.deleteWord(word) }) {
+                                Image(systemName: "xmark")
+                                    .foregroundColor(.red)
+                            }
+                        }
+                    }
+                    .onDelete(perform: viewModel.deleteWords)
+                }
+                .padding()
+            }
+        }
+    }
+    
+    private func OptionsView() -> some View {
+        HStack {
+            HStack {
+                Image(systemName: viewModel.currentWordSet.replaceSpaces ? "checkmark.square" : "square")
+                Text("Space to _")
+            }
+            .onTapGesture {
+                viewModel.currentWordSet.replaceSpaces.toggle()
+            }
+            HStack {
+                Image(systemName: viewModel.currentWordSet.attachSharp ? "checkmark.square" : "square")
+                Text("#")
+            }
+            .onTapGesture {
+                viewModel.currentWordSet.attachSharp.toggle()
+                if viewModel.currentWordSet.attachSharp {
+                    viewModel.currentWordSet.replaceSpaces = true
+                }
+            }
+            HStack {
+                Image(systemName: viewModel.currentWordSet.generateCombinations ? "checkmark.square" : "square")
+                Text("Combinations")
+            }
+            .onTapGesture {
+                viewModel.currentWordSet.generateCombinations.toggle()
+            }
+            Spacer()
+        }
+        .padding()
+    }
+    
+    private func GenerateTagsView() -> some View {
+        VStack {
+            Button("Generate Tags") {
+                viewModel.generateTags()
+            }
+            .padding()
+            if !viewModel.generatedTags.isEmpty {
+                HStack {
+                    Text(viewModel.generatedTags)
+                        .padding(5)
+                        .background(Color.blue.opacity(0.2))
+                        .cornerRadius(8)
+                        .onLongPressGesture {
+                            UIPasteboard.general.string = viewModel.generatedTags
+                            showingCopiedAlert = true
+                        }
+                    Button(action: {
+                        UIPasteboard.general.string = viewModel.generatedTags
+                        showingCopiedAlert = true
+                    }) {
+                        Image(systemName: "doc.on.doc")
+                            .foregroundColor(.blue)
+                    }
+                    .padding(.leading, 8)
+                    Button(action: {
+                        let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                           let window = windowScene.windows.first,
+                           let rootVC = window.rootViewController {
+                            activityVC.popoverPresentationController?.sourceView = rootVC.view
+                            rootVC.present(activityVC, animated: true)
+                        }
+                    }) {
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundColor(.blue)
+                    }
+                    .disabled(viewModel.generatedTags.isEmpty)
+                }
+                .padding()
+                .overlay(
+                    Group {
+                        if showingCopiedAlert {
+                            VStack {
+                                Spacer()
+                                Text("Tags copied!")
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(Color.black.opacity(0.75))
+                                    .cornerRadius(10)
+                                    .transition(.move(edge: .bottom))
+                                    .onAppear {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            showingCopiedAlert = false
+                                        }
+                                    }
+                            }
+                        }
+                    }
+                )
             }
         }
     }
