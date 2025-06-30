@@ -6,20 +6,21 @@ class MainViewModel: ObservableObject {
     @Published var wordSets: [WordSetModel] = []
     @Published var currentWordSet: WordSetModel!
     @Published var generatedTags: String = ""
+    @Published var isSyncing: Bool = true
     
     private let storageManager: WordSetManager
     private var cancellables = Swift.Set<AnyCancellable>()
     
     init(storageManager: WordSetManager = .shared) {
         self.storageManager = storageManager
-        loadWordSets()
         // NSManagedObjectContextDidSave Notification 구독
         storageManager.remoteChangePublisher
             .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] (notification) in
                 print("WordSetManager.remomteChange. \(notification.userInfo)")
-                 self?.loadWordSets()
+                self?.loadWordSets()
+                self?.isSyncing = false
             }
             .store(in: &cancellables)
     }

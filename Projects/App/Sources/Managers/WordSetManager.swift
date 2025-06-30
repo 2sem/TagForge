@@ -54,15 +54,6 @@ class WordSetManager {
         return newSet
     }
     
-    /// Default WordSet이 없을 때만 생성
-    func createDefaultWordSetIfNeeded(words: [String], replaceSpaces: Bool, attachSharp: Bool, generateCombinations: Bool) -> WordSetModel? {
-        let existing = (try? modelContext.fetch(FetchDescriptor<WordSetModel>()))?.first { $0.name == "Default" }
-        if let set = existing {
-            return set
-        }
-        return createWordSet(name: "Default", words: words, replaceSpaces: replaceSpaces, attachSharp: attachSharp, generateCombinations: generateCombinations)
-    }
-    
     func deleteWord(set: WordSetModel) {
         modelContext.delete(set)
         
