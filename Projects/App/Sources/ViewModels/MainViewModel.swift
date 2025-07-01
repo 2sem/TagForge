@@ -15,7 +15,10 @@ class MainViewModel: ObservableObject {
         self.storageManager = storageManager
         // NSManagedObjectContextDidSave Notification 구독
         storageManager.remoteChangePublisher
-            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
+            .combineLatest($isSyncing)
+            .filter { (_, isSyncing) in isSyncing }
+            .map { (notification, _) in notification }
+            .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] (notification) in
                 print("WordSetManager.remomteChange. \(notification.userInfo)")
