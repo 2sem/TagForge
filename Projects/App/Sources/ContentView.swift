@@ -13,12 +13,22 @@ struct ContentView: View {
     @State private var clipboardWords: [String] = []
     
     var body: some View {
-        VStack {
-            HeaderView()
-            InputWordView()
-            WordListView()
-            OptionsView()
-            GenerateTagsView()
+        ZStack {
+            if viewModel.isSyncing {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                ProgressView("Synchronizing ...")
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .padding()
+            } else {
+                VStack {
+                    HeaderView()
+                    InputWordView()
+                    WordListView()
+                    OptionsView()
+                    GenerateTagsView()
+                }
+            }
         }
         .onAppear{
 //            viewModel.loadWordSets()
