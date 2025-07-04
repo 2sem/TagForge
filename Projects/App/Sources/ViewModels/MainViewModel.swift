@@ -120,4 +120,9 @@ class MainViewModel: ObservableObject {
         }
         return combinations
     }
+    
+    func renameCurrentSet(to newName: String) {
+        currentWordSet.name = newName
+        storageManager.save()
+    }
 }

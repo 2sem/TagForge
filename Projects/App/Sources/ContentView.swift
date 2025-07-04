@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var newSetName: String = ""
     @State private var duplicateWord: String = ""
     @State private var clipboardWords: [String] = []
+    @State private var showingEditSetNameDialog = false
+    @State private var editedSetName: String = ""
     
     var body: some View {
         ZStack {
@@ -46,6 +48,13 @@ struct ContentView: View {
                 newSetName = ""
             }
         }
+        .alert("Edit Set Name", isPresented: $showingEditSetNameDialog) {
+            TextField("Set Name", text: $editedSetName)
+            Button("Cancel", role: .cancel) { }
+            Button("Save") {
+                viewModel.renameCurrentSet(to: editedSetName)
+            }
+        }
         .padding()
     }
     
@@ -63,6 +72,12 @@ struct ContentView: View {
             Spacer()
             Button(action: { showingSetNameDialog = true }) {
                 Image(systemName: "doc.badge.plus")
+            }
+            Button(action: {
+                editedSetName = viewModel.currentWordSet.name
+                showingEditSetNameDialog = true
+            }) {
+                Image(systemName: "pencil")
             }
         }.padding()
     }
