@@ -17,11 +17,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if viewModel.isSyncing {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                ProgressView("Synchronizing ...")
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .padding()
+                LoadingView(text: "Synchronizing ...")
             } else {
                 VStack {
                     HeaderView()
