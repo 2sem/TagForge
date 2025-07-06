@@ -150,9 +150,32 @@ struct ContentView: View {
     
     private func GenerateTagsView() -> some View {
         VStack {
-            Button("Generate Tags") {
-                viewModel.generateTags()
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    viewModel.generateTags()
+                }
+            }) {
+                HStack(spacing: 12) {
+                    Image(systemName: "tag.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                    Text("Generate Tags")
+                        .font(.system(size: 18, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 16)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.blue, Color.purple]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .cornerRadius(25)
+                .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
             }
+            .scaleEffect(viewModel.generatedTags.isEmpty ? 1.0 : 0.95)
+            .animation(.easeInOut(duration: 0.2), value: viewModel.generatedTags.isEmpty)
             .padding()
             if !viewModel.generatedTags.isEmpty {
                 HStack {
