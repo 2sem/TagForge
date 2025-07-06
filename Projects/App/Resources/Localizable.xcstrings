@@ -265,7 +265,20 @@
       }
     },
     "TagForge" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TagForge"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "태그공방"
+          }
+        }
+      }
     },
     "Tags copied!" : {
       "localizations" : {
