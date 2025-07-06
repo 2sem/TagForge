@@ -265,6 +265,9 @@
         }
       }
     },
+    "TagForge" : {
+
+    },
     "Tags copied!" : {
       "localizations" : {
         "en" : {
@@ -280,6 +283,9 @@
           }
         }
       }
+    },
+    "태그를 만들어보세요" : {
+
     }
   },
   "version" : "1.0"
