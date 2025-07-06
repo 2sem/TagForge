@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @Binding var isSyncing: Bool
     @StateObject private var viewModel = MainViewModel()
     @State private var inputText: String = ""
     @FocusState private var isInputFocused: Bool
@@ -13,11 +14,11 @@ struct ContentView: View {
     @State private var clipboardWords: [String] = []
     @State private var showingEditSetNameDialog = false
     @State private var editedSetName: String = ""
-    
+
     var body: some View {
         ZStack {
             if viewModel.isSyncing {
-                LoadingView(text: "Synchronizing ...")
+                Text("Synchronizing ...")
             } else {
                 VStack {
                     HeaderView()
@@ -30,6 +31,9 @@ struct ContentView: View {
         }
         .onAppear{
 //            viewModel.loadWordSets()
+        }
+        .onChange(of: viewModel.isSyncing) { newValue in
+            isSyncing = newValue
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
             Button("OK", role: .cancel) { }
@@ -458,6 +462,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(isSyncing: .constant(false))
     }
 }

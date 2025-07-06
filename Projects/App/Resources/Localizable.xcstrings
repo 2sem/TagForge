@@ -249,7 +249,6 @@
       }
     },
     "Synchronizing ..." : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
