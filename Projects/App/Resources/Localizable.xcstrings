@@ -17,9 +17,6 @@
         }
       }
     },
-    "#" : {
-
-    },
     "#%@" : {
 
     },
@@ -41,6 +38,7 @@
       }
     },
     "Combinations" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -128,6 +126,7 @@
       }
     },
     "Generate Tags" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -142,9 +141,6 @@
           }
         }
       }
-    },
-    "Generated Tags" : {
-
     },
     "New Set Name" : {
       "extractionState" : "stale",
@@ -164,6 +160,7 @@
       }
     },
     "No words in the current set.\nAdd words." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -197,6 +194,7 @@
       }
     },
     "Select existing set" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -233,6 +231,7 @@
 
     },
     "Space to _" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -281,6 +280,7 @@
       }
     },
     "Tags copied!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -296,7 +296,19 @@
         }
       }
     },
+    "복사 완료!" : {
+
+    },
+    "생성된 태그" : {
+
+    },
+    "태그 만들기" : {
+
+    },
     "태그를 만들어보세요" : {
+
+    },
+    "태그를 추가해보세요." : {
 
     }
   },

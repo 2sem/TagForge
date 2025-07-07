@@ -20,18 +20,20 @@ struct ContentView: View {
             if viewModel.isSyncing {
                 Text("Synchronizing ...")
             } else {
-                VStack {
+                VStack(spacing: 0) {
                     HeaderView()
+                    Divider().padding(.bottom, 8)
                     InputWordView()
-                    WordListView()
+                    TagChipListView()
                     OptionsView()
                     GenerateTagsView()
+                    Spacer(minLength: 0)
                 }
+                .padding(.horizontal)
+                .background(Color(red: 0.98, green: 0.98, blue: 0.98).ignoresSafeArea())
             }
         }
-        .onAppear{
-//            viewModel.loadWordSets()
-        }
+        .ignoresSafeArea(.keyboard)
         .onChange(of: viewModel.isSyncing) { newValue in
             isSyncing = newValue
         }
@@ -55,409 +57,261 @@ struct ContentView: View {
                 viewModel.renameCurrentSet(to: editedSetName)
             }
         }
-        .padding()
-    }
-    
-    private func HeaderView() -> some View {
-        HStack {
-            WordSetMenu(
-                availableSets: viewModel.wordSets,
-                onSelectWordSet: { viewModel.loadWord(set: $0) }
-            ) {
-                HStack {
-                    Image(systemName: "chevron.down")
-                    Text(viewModel.currentWordSet.name.isEmpty ? "Default" : viewModel.currentWordSet.name)
+        .overlay(
+            Group {
+                if showingCopiedAlert {
+                    VStack {
+                        Spacer()
+                        Text("복사 완료!")
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(Color.black.opacity(0.8))
+                            .cornerRadius(12)
+                            .padding(.bottom, 40)
+                            .transition(.move(edge: .bottom))
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    showingCopiedAlert = false
+                                }
+                            }
+                    }
                 }
+            }
+        )
+    }
+
+    private func HeaderView() -> some View {
+        HStack(spacing: 12) {
+            Button(action: { /* 탭 선택 액션 */ }) {
+                HStack(spacing: 8) {
+                    Text(viewModel.currentWordSet.name.isEmpty ? "Default" : viewModel.currentWordSet.name)
+                        .font(.system(size: 18, weight: .bold))
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 16, weight: .medium))
+                }
+                .foregroundColor(.primary)
             }
             Spacer()
-            Button(action: { showingSetNameDialog = true }) {
-                Image(systemName: "doc.badge.plus")
-            }
-            Button(action: {
-                editedSetName = viewModel.currentWordSet.name
-                showingEditSetNameDialog = true
-            }) {
+            Button(action: { showingEditSetNameDialog = true }) {
                 Image(systemName: "pencil")
+                    .font(.system(size: 20, weight: .medium))
+                    .padding(8)
+                    .contentShape(Rectangle())
             }
-        }.padding()
+        }
+        .padding(.vertical, 12)
     }
-    
+
     private func InputWordView() -> some View {
-        HStack {
-            TextField("Enter a word...", text: $inputText)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+        HStack(spacing: 8) {
+            Image(systemName: "tag")
+                .foregroundColor(.gray)
+            TextField("태그를 입력하고 + 버튼을 눌러 추가하세요", text: $inputText)
+                .font(.system(size: 16))
                 .focused($isInputFocused)
-                .onSubmit {
-                    addWord()
-                    isInputFocused = true
-                }
-                .submitLabel(.send)
+                .onSubmit { addWord() }
             Button(action: addWord) {
                 Image(systemName: "plus")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(width: 36, height: 36)
+                    .background(Color.blue)
+                    .clipShape(Circle())
+                    .shadow(radius: 2)
             }
         }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
+        .padding(.bottom, 8)
     }
-    
-    private func WordListView() -> some View {
-        Group {
-            if viewModel.currentWordSet.words?.isEmpty ?? true {
+
+    private func TagChipListView() -> some View {
+        let words = viewModel.currentWordSet.words ?? []
+        return Group {
+            if words.isEmpty {
                 EmptyWordListView()
             } else {
-                List {
-                    ForEach(viewModel.currentWordSet.words ?? [], id: \.text) { word in
-                        HStack {
-                            Text(word.text)
-                            Spacer()
-                            Button(action: { viewModel.deleteWord(word) }) {
-                                Image(systemName: "xmark")
-                                    .foregroundColor(.red)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 8) {
+                        ForEach(words, id: \.text) { word in
+                            HStack(spacing: 4) {
+                                Image(systemName: "line.horizontal.3")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Text(word.text)
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white)
+                                Button(action: { viewModel.deleteWord(word) }) {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundColor(Color(red: 0.91, green: 0.30, blue: 0.24))
+                                        .padding(.leading, 2)
+                                }
                             }
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 12)
+                            .background(Color(red: 0.29, green: 0.56, blue: 0.89))
+                            .cornerRadius(16)
+                            .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
                         }
                     }
-                    .onDelete(perform: viewModel.deleteWords)
+                    .padding(.vertical, 8)
                 }
-                .padding()
             }
         }
+        .padding(.bottom, 8)
     }
-    
+
     private func OptionsView() -> some View {
-        HStack(spacing: 16) {
-            // Space to _ 토글
-            Button(action: {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    viewModel.currentWordSet.replaceSpaces.toggle()
-                }
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: viewModel.currentWordSet.replaceSpaces ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(viewModel.currentWordSet.replaceSpaces ? .green : .gray)
-                        .font(.system(size: 16, weight: .semibold))
-                    Text("Space to _")
-                        .font(.system(size: 14, weight: .medium))
-                }
-                .foregroundColor(viewModel.currentWordSet.replaceSpaces ? .primary : .secondary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(viewModel.currentWordSet.replaceSpaces ? Color.green.opacity(0.1) : Color.gray.opacity(0.1))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(viewModel.currentWordSet.replaceSpaces ? Color.green.opacity(0.3) : Color.clear, lineWidth: 1)
-                )
+        HStack(spacing: 12) {
+            OptionButton(isSelected: viewModel.currentWordSet.replaceSpaces, text: "공백을 _로 대체") {
+                viewModel.currentWordSet.replaceSpaces.toggle()
             }
-            
-            // # 토글
-            Button(action: {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    viewModel.currentWordSet.attachSharp.toggle()
-                    if viewModel.currentWordSet.attachSharp {
-                        viewModel.currentWordSet.replaceSpaces = true
-                    }
-                }
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: viewModel.currentWordSet.attachSharp ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(viewModel.currentWordSet.attachSharp ? .blue : .gray)
-                        .font(.system(size: 16, weight: .semibold))
-                    Text("#")
-                        .font(.system(size: 14, weight: .bold))
-                }
-                .foregroundColor(viewModel.currentWordSet.attachSharp ? .primary : .secondary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(viewModel.currentWordSet.attachSharp ? Color.blue.opacity(0.1) : Color.gray.opacity(0.1))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(viewModel.currentWordSet.attachSharp ? Color.blue.opacity(0.3) : Color.clear, lineWidth: 1)
-                )
+            OptionButton(isSelected: viewModel.currentWordSet.attachSharp, text: "# 추가") {
+                viewModel.currentWordSet.attachSharp.toggle()
             }
-            
-            // Combinations 토글
-            Button(action: {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    viewModel.currentWordSet.generateCombinations.toggle()
-                }
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: viewModel.currentWordSet.generateCombinations ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(viewModel.currentWordSet.generateCombinations ? .purple : .gray)
-                        .font(.system(size: 16, weight: .semibold))
-                    Text("Combinations")
-                        .font(.system(size: 14, weight: .medium))
-                }
-                .foregroundColor(viewModel.currentWordSet.generateCombinations ? .primary : .secondary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(viewModel.currentWordSet.generateCombinations ? Color.purple.opacity(0.1) : Color.gray.opacity(0.1))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(viewModel.currentWordSet.generateCombinations ? Color.purple.opacity(0.3) : Color.clear, lineWidth: 1)
-                )
+            OptionButton(isSelected: viewModel.currentWordSet.generateCombinations, text: "조합 생성") {
+                viewModel.currentWordSet.generateCombinations.toggle()
             }
-            
-            Spacer()
         }
-        .padding()
+        .padding(.vertical, 8)
     }
-    
+
     private func GenerateTagsView() -> some View {
-        VStack {
+        VStack(spacing: 12) {
             Button(action: {
                 withAnimation(.easeInOut(duration: 0.3)) {
                     viewModel.generateTags()
                 }
-                isInputFocused = false // 태그 생성 시 키보드 내리기
+                isInputFocused = false
             }) {
-                HStack(spacing: 12) {
-                    Image(systemName: "tag.fill")
-                        .font(.system(size: 18, weight: .semibold))
-                    Text("Generate Tags")
-                        .font(.system(size: 18, weight: .semibold))
-                }
-                .foregroundColor(.white)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.blue, Color.purple]),
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .cornerRadius(25)
-                .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                Text("태그 만들기")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color(red: 0.35, green: 0.40, blue: 0.95))
+                    .cornerRadius(20)
+                    .shadow(color: .blue.opacity(0.18), radius: 8, x: 0, y: 4)
             }
-            .scaleEffect(viewModel.generatedTags.isEmpty ? 1.0 : 0.95)
-            .animation(.easeInOut(duration: 0.2), value: viewModel.generatedTags.isEmpty)
-            .padding()
             if !viewModel.generatedTags.isEmpty {
-                VStack(spacing: 16) {
-                    // 태그 결과 카드
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "tag.fill")
-                                .foregroundColor(.blue)
-                                .font(.system(size: 16, weight: .semibold))
-                            Text("Generated Tags")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.primary)
-                            Spacer()
-                        }
-                        
-                        Text(viewModel.generatedTags)
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(.secondary)
-                            .padding(12)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.blue.opacity(0.05))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.blue.opacity(0.2), lineWidth: 1)
-                            )
-                            .onLongPressGesture {
-                                UIPasteboard.general.string = viewModel.generatedTags
-                                showingCopiedAlert = true
-                            }
-                    }
-                    .padding(16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(.systemBackground))
-                            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
-                    )
-                    
-                    // 액션 버튼들
-                    HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: "tag.fill")
+                            .foregroundColor(.blue)
+                        Text("생성된 태그")
+                            .font(.system(size: 16, weight: .bold))
+                        Spacer()
                         Button(action: {
                             UIPasteboard.general.string = viewModel.generatedTags
                             showingCopiedAlert = true
                         }) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "doc.on.doc")
-                                    .font(.system(size: 16, weight: .semibold))
-                                Text("Copy")
-                                    .font(.system(size: 16, weight: .semibold))
-                            }
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 12)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.green, Color.green.opacity(0.8)]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .cornerRadius(25)
-                            .shadow(color: .green.opacity(0.3), radius: 4, x: 0, y: 2)
-                        }
-                        
-                        Button(action: {
-                            let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
-                            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                               let window = windowScene.windows.first,
-                               let rootVC = window.rootViewController {
-                                activityVC.popoverPresentationController?.sourceView = rootVC.view
-                                rootVC.present(activityVC, animated: true)
-                            }
-                        }) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "square.and.arrow.up")
-                                    .font(.system(size: 16, weight: .semibold))
-                                Text("Share")
-                                    .font(.system(size: 16, weight: .semibold))
-                            }
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 12)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.orange, Color.orange.opacity(0.8)]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .cornerRadius(25)
-                            .shadow(color: .orange.opacity(0.3), radius: 4, x: 0, y: 2)
+                            Image(systemName: "doc.on.doc")
+                                .foregroundColor(.blue)
                         }
                     }
+                    Text(viewModel.generatedTags)
+                        .font(.system(size: 15))
+                        .foregroundColor(.secondary)
+                        .padding(12)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
                 }
                 .padding()
-                .overlay(
-                    Group {
-                        if showingCopiedAlert {
-                            VStack {
-                                Spacer()
-                                Text("Tags copied!")
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .background(Color.black.opacity(0.75))
-                                    .cornerRadius(10)
-                                    .transition(.move(edge: .bottom))
-                                    .onAppear {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                            showingCopiedAlert = false
-                                        }
-                                    }
-                            }
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+                HStack(spacing: 16) {
+                    Button(action: {
+                        UIPasteboard.general.string = viewModel.generatedTags
+                        showingCopiedAlert = true
+                    }) {
+                        HStack {
+                            Image(systemName: "doc.on.doc")
+                            Text("Copy")
                         }
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 28)
+                        .padding(.vertical, 14)
+                        .background(Color.green)
+                        .cornerRadius(20)
+                        .shadow(color: .green.opacity(0.18), radius: 4, x: 0, y: 2)
                     }
-                )
+                    Button(action: {
+                        let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                           let window = windowScene.windows.first,
+                           let rootVC = window.rootViewController {
+                            activityVC.popoverPresentationController?.sourceView = rootVC.view
+                            rootVC.present(activityVC, animated: true)
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "square.and.arrow.up")
+                            Text("Share")
+                        }
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 28)
+                        .padding(.vertical, 14)
+                        .background(Color.orange)
+                        .cornerRadius(20)
+                        .shadow(color: .orange.opacity(0.18), radius: 4, x: 0, y: 2)
+                    }
+                }
+                .padding(.top, 8)
             }
         }
+        .padding(.vertical, 8)
     }
-    
+
     private func EmptyWordListView() -> some View {
         VStack(spacing: 24) {
             VStack(spacing: 12) {
                 Image(systemName: "tag")
                     .font(.system(size: 48))
                     .foregroundColor(.gray.opacity(0.6))
-                
-                Text("No words in the current set.\nAdd words.")
+                Text("태그를 추가해보세요.")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
-            
-            if viewModel.wordSets.count > 1 {
-                WordSetMenu(availableSets: viewModel.wordSets,
-                            onSelectWordSet: { set in
-                    viewModel.loadWord(set: set)
-                }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "folder.fill")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("Select existing set")
-                            .font(.system(size: 16, weight: .semibold))
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 14, weight: .semibold))
-                    }
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 14)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .cornerRadius(25)
-                    .shadow(color: .blue.opacity(0.3), radius: 6, x: 0, y: 3)
-                }
-            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
         .padding()
     }
-    
+
     private func addWord() {
-        if !viewModel.addWord(inputText) && !inputText.isEmpty {
-            duplicateWord = inputText
-            showingDuplicateAlert = true
-        }
-        inputText = ""
-    }
-    
-    // Keeping clipboard-related functions unchanged
-    private func checkClipboard() {
-        guard let clipboardText = UIPasteboard.general.string else { return }
-        let parsedWords = parseClipboardText(clipboardText)
-        
-        guard !parsedWords.isEmpty else {
-            return
-        }
-        
-        clipboardWords = parsedWords
-        
-        importClipboardWords()
-    }
-    
-    private func parseClipboardText(_ text: String) -> [String] {
-        // Split by common separators (comma, space, newline)
-        let words = text.components(separatedBy: CharacterSet(charactersIn: ", \n"))
-            .map { word -> String in
-                var processed = word.trimmingCharacters(in: .whitespacesAndNewlines)
-                // Remove # if present
-                if processed.hasPrefix("#") {
-                    processed = String(processed.dropFirst())
-                }
-                // Replace underscores with spaces if needed
-                if !viewModel.currentWordSet.replaceSpaces {
-                    processed = processed.replacingOccurrences(of: "_", with: " ")
-                }
-                return processed
+        withAnimation {
+            if !viewModel.addWord(inputText) && !inputText.isEmpty {
+                duplicateWord = inputText
+                showingDuplicateAlert = true
             }
-            .filter { !$0.isEmpty }
-        
-        return words
-    }
-    
-    private func importClipboardWords() {
-        for word in clipboardWords {
-            let isAlreadyExistingWord = viewModel.currentWordSet.words?.contains(where: { $0.text == word }) ?? false
-            
-            guard isAlreadyExistingWord else {
-                continue
-            }
-            
-            viewModel.currentWordSet.words?.append(.init(text: word))
+            inputText = ""
         }
-        clipboardWords.removeAll()
+    }
+}
+
+struct OptionButton: View {
+    let isSelected: Bool
+    let text: String
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Text(text)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(isSelected ? .white : .gray)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(isSelected ? Color.blue : Color(.systemGray5))
+                .cornerRadius(16)
+        }
     }
 }
 
