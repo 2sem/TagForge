@@ -215,6 +215,7 @@ struct ContentView: View {
                 withAnimation(.easeInOut(duration: 0.3)) {
                     viewModel.generateTags()
                 }
+                isInputFocused = false // 태그 생성 시 키보드 내리기
             }) {
                 HStack(spacing: 12) {
                     Image(systemName: "tag.fill")
