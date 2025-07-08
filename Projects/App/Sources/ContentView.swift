@@ -93,6 +93,12 @@ struct ContentView: View {
                 .foregroundColor(.primary)
             }
             Spacer()
+            Button(action: { showingSetNameDialog = true }) {
+                Image(systemName: "doc.badge.plus")
+                    .font(.system(size: 20, weight: .medium))
+                    .padding(8)
+                    .contentShape(Rectangle())
+            }
             Button(action: { showingEditSetNameDialog = true }) {
                 Image(systemName: "pencil")
                     .font(.system(size: 20, weight: .medium))
