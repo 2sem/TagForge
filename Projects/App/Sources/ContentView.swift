@@ -149,7 +149,7 @@ struct ContentView: View {
             } else {
                 ScrollView(showsIndicators: false) {
                     LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-                        ForEach(words, id: \.text) { word in
+                        ForEach(words, id: \.id) { word in
                             HStack(spacing: 8) {
                                 Text(word.text)
                                     .font(.system(size: 16, weight: .medium))
