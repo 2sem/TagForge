@@ -155,10 +155,14 @@ struct ContentView: View {
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.white)
                                 Button(action: { viewModel.deleteWord(word) }) {
-                                    Image(systemName: "xmark.circle")
-                                        .font(.system(size: 16, weight: .bold))
-                                        .foregroundColor(Color.gray)
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 14, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .frame(width: 20, height: 20)
+                                        .background(Color.red.opacity(0.85))
+                                        .clipShape(Circle())
                                 }
+                                .padding(.leading, 2)
                             }
                             .padding(.vertical, 8)
                             .padding(.horizontal, 14)
