@@ -15,7 +15,7 @@ struct ContentView: View {
     @State private var clipboardWords: [String] = []
     @State private var showingEditSetNameDialog = false
     @State private var editedSetName: String = ""
-    @State private var isLoading: Bool = false
+    @State private var isGenerating: Bool = false
 
     var body: some View {
         ZStack {
@@ -192,12 +192,12 @@ struct ContentView: View {
     private func GenerateTagsView() -> some View {
         VStack(spacing: 12) {
             Button(action: {
-                isLoading = true
+                isGenerating = true
                 withAnimation(.spring()) {
                     viewModel.generateTags()
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                    isLoading = false
+                    isGenerating = false
                 }
                 isInputFocused = false
             }) {
@@ -205,7 +205,7 @@ struct ContentView: View {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color(red: 0.35, green: 0.40, blue: 0.95))
                         .shadow(color: .blue.opacity(0.18), radius: 8, x: 0, y: 4)
-                    if isLoading {
+                    if isGenerating {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     } else {
@@ -215,8 +215,8 @@ struct ContentView: View {
                     }
                 }
                 .frame(height: 56)
-                .scaleEffect(isLoading ? 0.97 : 1.0)
-                .animation(.spring(), value: isLoading)
+                .scaleEffect(isGenerating ? 0.97 : 1.0)
+                .animation(.spring(), value: isGenerating)
             }
             .buttonStyle(PlainButtonStyle())
             if !viewModel.generatedTags.isEmpty {
