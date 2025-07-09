@@ -137,12 +137,15 @@ struct ContentView: View {
 
     private func TagChipListView() -> some View {
         let words = viewModel.currentWordSet.words ?? []
+        let columns: [GridItem] = [
+            GridItem(.adaptive(minimum: 80), spacing: 8)
+        ]
         return Group {
             if words.isEmpty {
                 EmptyWordListView()
             } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 8) {
+                ScrollView(showsIndicators: false) {
+                    LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
                         ForEach(words, id: \.text) { word in
                             HStack(spacing: 4) {
                                 Image(systemName: "line.horizontal.3")
