@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct ContentView: View {
     @Binding var isSyncing: Bool
@@ -14,6 +15,7 @@ struct ContentView: View {
     @State private var clipboardWords: [String] = []
     @State private var showingEditSetNameDialog = false
     @State private var editedSetName: String = ""
+    @State private var isLoading: Bool = false
 
     var body: some View {
         ZStack {
@@ -110,27 +112,28 @@ struct ContentView: View {
     }
 
     private func InputWordView() -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: "tag")
-                .foregroundColor(.gray)
-            TextField("태그를 입력하고 + 버튼을 눌러 추가하세요", text: $inputText)
-                .font(.system(size: 16))
+        HStack(spacing: 0) {
+            TextField("Enter a tag and tap + to add", text: $inputText)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
                 .focused($isInputFocused)
                 .onSubmit { addWord() }
+                .background(Color.white)
             Button(action: addWord) {
                 Image(systemName: "plus")
-                    .font(.system(size: 22, weight: .bold))
                     .foregroundColor(.white)
                     .frame(width: 36, height: 36)
                     .background(Color.blue)
                     .clipShape(Circle())
-                    .shadow(radius: 2)
             }
+            .padding(.trailing, 8)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
         .background(Color.white)
         .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isInputFocused ? Color.blue : Color.clear, lineWidth: 2)
+        )
         .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
         .padding(.bottom, 8)
     }
@@ -147,24 +150,20 @@ struct ContentView: View {
                 ScrollView(showsIndicators: false) {
                     LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
                         ForEach(words, id: \.text) { word in
-                            HStack(spacing: 4) {
-                                Image(systemName: "line.horizontal.3")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.white.opacity(0.7))
+                            HStack(spacing: 8) {
                                 Text(word.text)
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.white)
                                 Button(action: { viewModel.deleteWord(word) }) {
-                                    Image(systemName: "xmark")
-                                        .font(.system(size: 12, weight: .bold))
-                                        .foregroundColor(Color(red: 0.91, green: 0.30, blue: 0.24))
-                                        .padding(.leading, 2)
+                                    Image(systemName: "xmark.circle")
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundColor(Color.gray)
                                 }
                             }
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 14)
                             .background(Color(red: 0.29, green: 0.56, blue: 0.89))
-                            .cornerRadius(16)
+                            .cornerRadius(18)
                             .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
                         }
                     }
@@ -176,14 +175,14 @@ struct ContentView: View {
     }
 
     private func OptionsView() -> some View {
-        HStack(spacing: 12) {
-            OptionButton(isSelected: viewModel.currentWordSet.replaceSpaces, text: "공백을 _로 대체") {
+        HStack(spacing: 8) {
+            OptionButton(isSelected: viewModel.currentWordSet.replaceSpaces, icon: "arrow.right.to.line", text: "공백을 _로 대체") {
                 viewModel.currentWordSet.replaceSpaces.toggle()
             }
-            OptionButton(isSelected: viewModel.currentWordSet.attachSharp, text: "# 추가") {
+            OptionButton(isSelected: viewModel.currentWordSet.attachSharp, icon: "number", text: "# 추가") {
                 viewModel.currentWordSet.attachSharp.toggle()
             }
-            OptionButton(isSelected: viewModel.currentWordSet.generateCombinations, text: "조합 생성") {
+            OptionButton(isSelected: viewModel.currentWordSet.generateCombinations, icon: "square.stack.3d.up", text: "조합 생성") {
                 viewModel.currentWordSet.generateCombinations.toggle()
             }
         }
@@ -193,20 +192,33 @@ struct ContentView: View {
     private func GenerateTagsView() -> some View {
         VStack(spacing: 12) {
             Button(action: {
-                withAnimation(.easeInOut(duration: 0.3)) {
+                isLoading = true
+                withAnimation(.spring()) {
                     viewModel.generateTags()
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                    isLoading = false
                 }
                 isInputFocused = false
             }) {
-                Text("태그 만들기")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(Color(red: 0.35, green: 0.40, blue: 0.95))
-                    .cornerRadius(20)
-                    .shadow(color: .blue.opacity(0.18), radius: 8, x: 0, y: 4)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color(red: 0.35, green: 0.40, blue: 0.95))
+                        .shadow(color: .blue.opacity(0.18), radius: 8, x: 0, y: 4)
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Text("태그 만들기")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+                .frame(height: 56)
+                .scaleEffect(isLoading ? 0.97 : 1.0)
+                .animation(.spring(), value: isLoading)
             }
+            .buttonStyle(PlainButtonStyle())
             if !viewModel.generatedTags.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -217,27 +229,34 @@ struct ContentView: View {
                         Spacer()
                         Button(action: {
                             UIPasteboard.general.string = viewModel.generatedTags
-                            showingCopiedAlert = true
+                            withAnimation {
+                                showingCopiedAlert = true
+                            }
                         }) {
                             Image(systemName: "doc.on.doc")
                                 .foregroundColor(.blue)
                         }
                     }
-                    Text(viewModel.generatedTags)
-                        .font(.system(size: 15))
-                        .foregroundColor(.secondary)
-                        .padding(12)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
+                    ScrollView(.vertical) {
+                        Text(viewModel.generatedTags)
+                            .font(.system(size: 15))
+                            .foregroundColor(.secondary)
+                            .padding(12)
+                    }
+                    .frame(maxHeight: 120)
+                    .background(Color(UIColor.systemGray6))
+                    .cornerRadius(10)
                 }
                 .padding()
                 .background(Color.white)
                 .cornerRadius(16)
-                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+                .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
                 HStack(spacing: 16) {
                     Button(action: {
                         UIPasteboard.general.string = viewModel.generatedTags
-                        showingCopiedAlert = true
+                        withAnimation {
+                            showingCopiedAlert = true
+                        }
                     }) {
                         HStack {
                             Image(systemName: "doc.on.doc")
@@ -258,6 +277,9 @@ struct ContentView: View {
                            let rootVC = window.rootViewController {
                             activityVC.popoverPresentationController?.sourceView = rootVC.view
                             rootVC.present(activityVC, animated: true)
+                        }
+                        withAnimation {
+                            showingCopiedAlert = true
                         }
                     }) {
                         HStack {
@@ -309,18 +331,25 @@ struct ContentView: View {
 
 struct OptionButton: View {
     let isSelected: Bool
+    let icon: String
     let text: String
     let action: () -> Void
     var body: some View {
         Button(action: action) {
-            Text(text)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(isSelected ? .white : .gray)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(isSelected ? Color.blue : Color(.systemGray5))
-                .cornerRadius(16)
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .medium))
+                Text(text)
+                    .font(.system(size: 14, weight: .medium))
+            }
+            .foregroundColor(isSelected ? .white : .gray)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(isSelected ? Color.blue : Color(UIColor.systemGray5))
+            .cornerRadius(16)
+            .shadow(color: isSelected ? Color.blue.opacity(0.12) : .clear, radius: 2, x: 0, y: 1)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
