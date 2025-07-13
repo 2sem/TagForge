@@ -254,20 +254,18 @@ private func TagChipListView() -> some View {
                         }
                         .accessibilityLabel("Copy")
                     }
-                    ScrollView(.vertical) {
-                        Text(viewModel.generatedTags)
-                            .font(.system(size: 15))
-                            .foregroundColor(.secondary)
-                            .padding(12)
-                    }
-                    .frame(maxHeight: 120)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(10)
+                    Text(viewModel.generatedTags)
+                        .font(.system(size: 15))
+                        .foregroundColor(.secondary)
+                        .padding(12)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
                 }
                 .padding()
                 .background(Color.white)
                 .cornerRadius(16)
                 .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
+                
                 HStack(spacing: 16) {
                     Button(action: {
                         UIPasteboard.general.string = viewModel.generatedTags
