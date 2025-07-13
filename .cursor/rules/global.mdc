@@ -19,3 +19,9 @@ App: 앱 프로젝트
 DynamicThirdParty: 동적 라이브러리 모음
 ThirdParty: 정적 라이브러리 모음
 
+# 프로젝트 폴더 목록
+Resources: 리소스 목록
+
+# App 프로젝트 리소스 목록
+Localizable.xcstring: 현지화 파일
+
