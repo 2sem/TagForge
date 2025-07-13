@@ -26,6 +26,9 @@ class MainViewModel: ObservableObject {
                 self?.isSyncing = false
             }
             .store(in: &cancellables)
+        
+        // 초기 데이터 로드
+        loadWordSets()
     }
     
     func loadWordSets() {

@@ -54,6 +54,11 @@ class WordSetManager {
         return newSet
     }
     
+    func deleteWordSet(_ wordSet: WordSetModel) {
+        modelContext.delete(wordSet)
+        self.save()
+    }
+    
     func deleteWord(set: WordSetModel) {
         modelContext.delete(set)
         

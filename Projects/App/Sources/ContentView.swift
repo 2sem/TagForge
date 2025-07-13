@@ -1,6 +1,8 @@
 import SwiftUI
 import SwiftData
+#if os(iOS)
 import UIKit
+#endif
 
 struct ContentView: View {
     @Binding var isSyncing: Bool
@@ -16,6 +18,7 @@ struct ContentView: View {
     @State private var showingEditSetNameDialog = false
     @State private var editedSetName: String = ""
     @State private var isGenerating: Bool = false
+    @State private var showingWordSetPicker = false
 
     var body: some View {
         ZStack {
@@ -59,6 +62,9 @@ struct ContentView: View {
                 viewModel.renameCurrentSet(to: editedSetName)
             }
         }
+        .sheet(isPresented: $showingWordSetPicker) {
+            WordSetPickerView(viewModel: viewModel, isPresented: $showingWordSetPicker)
+        }
         .overlay(
             Group {
                 if showingCopiedAlert {
@@ -85,7 +91,7 @@ struct ContentView: View {
 
     private func HeaderView() -> some View {
         HStack(spacing: 12) {
-            Button(action: { /* 탭 선택 액션 */ }) {
+            Button(action: { showingWordSetPicker = true }) {
                 HStack(spacing: 8) {
                     Text(viewModel.currentWordSet.name.isEmpty ? "Default" : viewModel.currentWordSet.name)
                         .font(.system(size: 18, weight: .bold))
@@ -230,7 +236,9 @@ private func TagChipListView() -> some View {
                             .font(.system(size: 16, weight: .bold))
                         Spacer()
                         Button(action: {
+                            #if os(iOS)
                             UIPasteboard.general.string = viewModel.generatedTags
+                            #endif
                             withAnimation {
                                 showingCopiedAlert = true
                             }
@@ -255,7 +263,9 @@ private func TagChipListView() -> some View {
                 .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
                 HStack(spacing: 16) {
                     Button(action: {
+                        #if os(iOS)
                         UIPasteboard.general.string = viewModel.generatedTags
+                        #endif
                         withAnimation {
                             showingCopiedAlert = true
                         }
@@ -273,6 +283,7 @@ private func TagChipListView() -> some View {
                         .shadow(color: .green.opacity(0.18), radius: 4, x: 0, y: 2)
                     }
                     Button(action: {
+                        #if os(iOS)
                         let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
                         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                            let window = windowScene.windows.first,
@@ -280,6 +291,7 @@ private func TagChipListView() -> some View {
                             activityVC.popoverPresentationController?.sourceView = rootVC.view
                             rootVC.present(activityVC, animated: true)
                         }
+                        #endif
                         withAnimation {
                             showingCopiedAlert = true
                         }
