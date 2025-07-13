@@ -13,5 +13,10 @@ alwaysApply: false
 # UI 작업
 - View에 문구가 추가되는 경우 현지화도 함께 구현
 
+# 현지화
+String(localized:) 사용 금지
+String(format:) 사용 금지
+문자열 보간만 사용
+
 # MDC 업데이트
 MDC에 추가하는게 효율적인 경우 내용 추가/수정

@@ -9,59 +9,87 @@ struct WordSetPickerView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach(viewModel.wordSets, id: \.id) { wordSet in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(wordSet.name.isEmpty ? "Default" : wordSet.name)
-                                .font(.system(size: 16, weight: .medium))
-                            Text("\(wordSet.words?.count ?? 0)개 태그")
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        if wordSet.id == viewModel.currentWordSet.id {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
-                                .font(.system(size: 16, weight: .bold))
-                        }
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        viewModel.loadWord(set: wordSet)
-                        isPresented = false
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        if viewModel.wordSets.count > 1 {
-                            Button("삭제", role: .destructive) {
-                                wordSetToDelete = wordSet
-                                showingDeleteAlert = true
-                            }
-                        }
-                    }
-                }
+            wordSetList
+        }
+        .alert("Delete WordSet", isPresented: $showingDeleteAlert) {
+            deleteAlertButtons
+        } message: {
+            Text("Are you sure you want to delete this WordSet? All tags will be deleted as well.")
+        }
+    }
+    
+    private var wordSetList: some View {
+        List {
+            ForEach(viewModel.wordSets) { wordSet in
+                wordSetRow(wordSet)
             }
-            .navigationTitle("WordSet 선택")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("닫기") {
-                        isPresented = false
-                    }
+        }
+        .navigationTitle("WordSet Selection")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Close") {
+                    isPresented = false
                 }
             }
         }
-        .alert("WordSet 삭제", isPresented: $showingDeleteAlert) {
-            Button("취소", role: .cancel) { }
-            Button("삭제", role: .destructive) {
+    }
+    
+    private func wordSetRow(_ wordSet: WordSetModel) -> some View {
+        HStack {
+            wordSetInfo(wordSet)
+            Spacer()
+            selectionIndicator(for: wordSet)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.loadWord(set: wordSet)
+            isPresented = false
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            deleteSwipeAction(for: wordSet)
+        }
+    }
+    
+    private func wordSetInfo(_ wordSet: WordSetModel) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(wordSet.name.isEmpty ? "Default" : wordSet.name)
+                .font(.system(size: 16, weight: .medium))
+            Text("\(wordSet.words?.count ?? 0) tags")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+        }
+    }
+    
+    private func selectionIndicator(for wordSet: WordSetModel) -> some View {
+        Group {
+            if wordSet.id == viewModel.currentWordSet.id {
+                Image(systemName: "checkmark")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 16, weight: .bold))
+            }
+        }
+    }
+    
+    private func deleteSwipeAction(for wordSet: WordSetModel) -> some View {
+        Group {
+            if viewModel.wordSets.count > 1 {
+                Button("Delete", role: .destructive) {
+                    wordSetToDelete = wordSet
+                    showingDeleteAlert = true
+                }
+            }
+        }
+    }
+    
+    private var deleteAlertButtons: some View {
+        Group {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
                 if let wordSet = wordSetToDelete {
                     deleteWordSet(wordSet)
                 }
             }
-        } message: {
-            Text("이 WordSet을 삭제하시겠습니까? 모든 태그가 함께 삭제됩니다.")
         }
     }
     
@@ -84,4 +112,4 @@ struct WordSetPickerView_Previews: PreviewProvider {
     static var previews: some View {
         WordSetPickerView(viewModel: MainViewModel(), isPresented: .constant(true))
     }
-} 
+}

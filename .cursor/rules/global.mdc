@@ -8,6 +8,7 @@ alwaysApply: true
 # 프로젝트 구성
 Xcode: Xcode 16
 Swift: 5
+기본 언어: 영어
 xcodeproj 충돌을 피하기 위해 Tuist로 구성
 
 # 폴더 목록
