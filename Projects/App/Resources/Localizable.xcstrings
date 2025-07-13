@@ -20,22 +20,64 @@
     "#%@" : {
 
     },
-    "%@ tags" : {
-
+    "%lld tags" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 태그"
+          }
+        }
+      }
     },
-    "%@개 태그" : {
-      "extractionState" : "stale",
+    "Add #" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ tags"
+            "value" : "Add"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@개 태그"
+            "value" : "추가"
+          }
+        }
+      }
+    },
+    "Add some tags." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add some tags."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "태그를 추가해보세요."
+          }
+        }
+      }
+    },
+    "Add Word" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Word"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어 추가"
           }
         }
       }
@@ -57,7 +99,7 @@
       }
     },
     "Cancel" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -74,7 +116,7 @@
       }
     },
     "Close" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -91,7 +133,7 @@
       }
     },
     "Combinations" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -107,8 +149,37 @@
         }
       }
     },
+    "Copied!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copied!"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복사 완료!"
+          }
+        }
+      }
+    },
     "Copy" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복사"
+          }
+        }
+      }
     },
     "Default" : {
       "extractionState" : "stale",
@@ -128,7 +199,7 @@
       }
     },
     "Delete" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -162,7 +233,7 @@
       }
     },
     "Duplicate Word" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -179,7 +250,7 @@
       }
     },
     "Edit Set Name" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -196,7 +267,7 @@
       }
     },
     "Enter a word..." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -212,8 +283,24 @@
         }
       }
     },
+    "Generate combinations" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generate combinations"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "조합 생성"
+          }
+        }
+      }
+    },
     "Generate Tags" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -225,6 +312,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "태그 생성"
+          }
+        }
+      }
+    },
+    "Generated Tags" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generated Tags"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "생성된 태그"
           }
         }
       }
@@ -259,6 +362,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "현재 태그 생성에 사용할 단어가 없습니다.\n단어를 추가하세요."
+          }
+        }
+      }
+    },
+    "OK" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "확인"
+          }
+        }
+      }
+    },
+    "Replace spaces with _" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Space to _"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공백을 _로"
           }
         }
       }
@@ -315,21 +452,17 @@
       }
     },
     "Share" : {
-
-    },
-    "Space to _" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Space to _"
+            "value" : "Share"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "공백을 _로"
+            "value" : "공유"
           }
         }
       }
@@ -383,6 +516,22 @@
         }
       }
     },
+    "Try generating tags" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try generating tags"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "태그를 만들어보세요"
+          }
+        }
+      }
+    },
     "WordSet Selection" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -399,21 +548,6 @@
           }
         }
       }
-    },
-    "복사 완료!" : {
-
-    },
-    "생성된 태그" : {
-
-    },
-    "태그 만들기" : {
-
-    },
-    "태그를 만들어보세요" : {
-
-    },
-    "태그를 추가해보세요." : {
-
     }
   },
   "version" : "1.0"

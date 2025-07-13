@@ -64,7 +64,7 @@ struct SplashScreenView: View {
                         .shadow(color: .black.opacity(0.5), radius: 8, x: 0, y: 4)
                     
                     // 부제목
-                    Text("태그를 만들어보세요")
+                    Text("Try generating tags")
                         .font(.system(size: 20, weight: .medium, design: .rounded))
                         .foregroundColor(.white.opacity(0.9))
                         .opacity(textOpacity)

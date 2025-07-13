@@ -68,7 +68,7 @@ struct ContentView: View {
                 if showingCopiedAlert {
                     VStack {
                         Spacer()
-                        Text("복사 완료!")
+                        Text("Copied!")
                             .foregroundColor(.white)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
@@ -105,19 +105,21 @@ struct ContentView: View {
                     .padding(8)
                     .contentShape(Rectangle())
             }
+            .accessibilityLabel("New Set Name")
             Button(action: { showingEditSetNameDialog = true }) {
                 Image(systemName: "pencil")
                     .font(.system(size: 20, weight: .medium))
                     .padding(8)
                     .contentShape(Rectangle())
             }
+            .accessibilityLabel("Edit Set Name")
         }
         .padding(.vertical, 12)
     }
 
     private func InputWordView() -> some View {
         HStack(spacing: 0) {
-            TextField("Enter a tag and tap + to add", text: $inputText)
+            TextField("Enter a word...", text: $inputText)
                 .padding(.vertical, 12)
                 .padding(.horizontal, 16)
                 .focused($isInputFocused)
@@ -132,6 +134,7 @@ struct ContentView: View {
                     .background(Color.blue)
                     .clipShape(Circle())
             }
+            .accessibilityLabel("Add Word")
             .padding(.trailing, 8)
         }
         .background(Color.white)
@@ -168,6 +171,7 @@ private func TagChipListView() -> some View {
                                         .background(Color.red.opacity(0.85))
                                         .clipShape(Circle())
                                 }
+                                .accessibilityLabel("Delete \(word.text)")
                                 .padding(.leading, 2)
                             }
                             .padding(.vertical, 8)
@@ -186,13 +190,13 @@ private func TagChipListView() -> some View {
 
     private func OptionsView() -> some View {
         HStack(spacing: 8) {
-            OptionButton(isSelected: viewModel.currentWordSet.replaceSpaces, icon: "arrow.right.to.line", text: "공백을 _로 대체") {
+            OptionButton(isSelected: viewModel.currentWordSet.replaceSpaces, icon: "arrow.right.to.line", text: "Replace spaces with _") {
                 viewModel.currentWordSet.replaceSpaces.toggle()
             }
-            OptionButton(isSelected: viewModel.currentWordSet.attachSharp, icon: "number", text: "# 추가") {
+            OptionButton(isSelected: viewModel.currentWordSet.attachSharp, icon: "number", text: "Add #") {
                 viewModel.currentWordSet.attachSharp.toggle()
             }
-            OptionButton(isSelected: viewModel.currentWordSet.generateCombinations, icon: "square.stack.3d.up", text: "조합 생성") {
+            OptionButton(isSelected: viewModel.currentWordSet.generateCombinations, icon: "square.stack.3d.up", text: "Combinations") {
                 viewModel.currentWordSet.generateCombinations.toggle()
             }
         }
@@ -219,7 +223,7 @@ private func TagChipListView() -> some View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     } else {
-                        Text("태그 만들기")
+                        Text("Generate Tags")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.white)
                     }
@@ -234,7 +238,7 @@ private func TagChipListView() -> some View {
                     HStack {
                         Image(systemName: "tag.fill")
                             .foregroundColor(.blue)
-                        Text("생성된 태그")
+                        Text("Generated Tags")
                             .font(.system(size: 16, weight: .bold))
                         Spacer()
                         Button(action: {
@@ -248,6 +252,7 @@ private func TagChipListView() -> some View {
                             Image(systemName: "doc.on.doc")
                                 .foregroundColor(.blue)
                         }
+                        .accessibilityLabel("Copy")
                     }
                     ScrollView(.vertical) {
                         Text(viewModel.generatedTags)
@@ -282,6 +287,7 @@ private func TagChipListView() -> some View {
                         .cornerRadius(20)
                         .shadow(color: .green.opacity(0.18), radius: 4, x: 0, y: 2)
                     }
+                    .accessibilityLabel("Copy")
                     Button(action: {
                         let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
                         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -319,7 +325,7 @@ private func TagChipListView() -> some View {
                 Image(systemName: "tag")
                     .font(.system(size: 48))
                     .foregroundColor(.gray.opacity(0.6))
-                Text("태그를 추가해보세요.")
+                Text("Generate Tags")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -349,7 +355,7 @@ private func TagChipListView() -> some View {
 struct OptionButton: View {
     let isSelected: Bool
     let icon: String
-    let text: String
+    let text: LocalizedStringKey
     let action: () -> Void
     var body: some View {
         Button(action: action) {
