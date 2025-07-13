@@ -138,11 +138,9 @@ struct ContentView: View {
         .padding(.bottom, 8)
     }
 
-    private func TagChipListView() -> some View {
-        let words = viewModel.currentWordSet.words ?? []
-        let columns: [GridItem] = [
-            GridItem(.adaptive(minimum: 80), spacing: 8)
-        ]
+private func TagChipListView() -> some View {
+        let words = (viewModel.currentWordSet.words ?? []).sorted { $0.order < $1.order }
+        let columns: [GridItem] = Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
         return Group {
             if words.isEmpty {
                 EmptyWordListView()

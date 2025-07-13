@@ -57,10 +57,12 @@ class MainViewModel: ObservableObject {
     func addWord(_ word: String) -> Bool {
         let trimmedWord = word.trimmingCharacters(in: .whitespacesAndNewlines)
         let words = currentWordSet.words ?? []
-        
+
         guard !trimmedWord.isEmpty, !words.contains(where: { $0.text == trimmedWord }) else { return false }
-        
-        let newWord = WordModel(text: trimmedWord, wordSet: currentWordSet)
+
+        // order: 현재 words 중 최대 order + 1
+        let maxOrder = words.map { $0.order }.max() ?? -1
+        let newWord = WordModel(text: trimmedWord, order: maxOrder + 1, wordSet: currentWordSet)
         currentWordSet.words?.append(newWord)
         storageManager.save()
         return true
