@@ -1,8 +1,6 @@
 import SwiftUI
 import SwiftData
-#if os(iOS)
 import UIKit
-#endif
 
 struct ContentView: View {
     @Binding var isSyncing: Bool
@@ -145,14 +143,16 @@ struct ContentView: View {
     }
 
 private func TagChipListView() -> some View {
-        let words = (viewModel.currentWordSet.words ?? []).sorted { $0.order < $1.order }
-        let columns: [GridItem] = [GridItem(.adaptive(minimum: 60), spacing: 8, alignment: .top)]
+        let words = (viewModel.currentWordSet.words ?? []).sorted { (word1, word2) in
+            word1.order < word2.order
+        }
+        
         return Group {
             if words.isEmpty {
                 EmptyWordListView()
             } else {
                 ScrollView(showsIndicators: false) {
-                    LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                    FlowLayout(spacing: 8) {
                         ForEach(words, id: \.id) { word in
                             HStack(spacing: 8) {
                                 Text(word.text)
@@ -254,7 +254,7 @@ private func TagChipListView() -> some View {
                             .padding(12)
                     }
                     .frame(maxHeight: 120)
-                    .background(Color(UIColor.systemGray6))
+                    .background(Color(.systemGray6))
                     .cornerRadius(10)
                 }
                 .padding()
@@ -263,9 +263,7 @@ private func TagChipListView() -> some View {
                 .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
                 HStack(spacing: 16) {
                     Button(action: {
-                        #if os(iOS)
                         UIPasteboard.general.string = viewModel.generatedTags
-                        #endif
                         withAnimation {
                             showingCopiedAlert = true
                         }
@@ -283,7 +281,6 @@ private func TagChipListView() -> some View {
                         .shadow(color: .green.opacity(0.18), radius: 4, x: 0, y: 2)
                     }
                     Button(action: {
-                        #if os(iOS)
                         let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
                         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                            let window = windowScene.windows.first,
@@ -291,7 +288,6 @@ private func TagChipListView() -> some View {
                             activityVC.popoverPresentationController?.sourceView = rootVC.view
                             rootVC.present(activityVC, animated: true)
                         }
-                        #endif
                         withAnimation {
                             showingCopiedAlert = true
                         }
@@ -359,7 +355,7 @@ struct OptionButton: View {
             .foregroundColor(isSelected ? .white : .gray)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(isSelected ? Color.blue : Color(UIColor.systemGray5))
+            .background(isSelected ? Color.blue : Color(.systemGray5))
             .cornerRadius(16)
             .shadow(color: isSelected ? Color.blue.opacity(0.12) : .clear, radius: 2, x: 0, y: 1)
         }
