@@ -121,7 +121,9 @@ struct ContentView: View {
                 .padding(.vertical, 12)
                 .padding(.horizontal, 16)
                 .focused($isInputFocused)
-                .onSubmit { addWord() }
+                .onSubmit {
+                    addWord()
+                }
                 .background(Color.white)
             Button(action: addWord) {
                 Image(systemName: "plus")
@@ -330,11 +332,16 @@ private func TagChipListView() -> some View {
 
     private func addWord() {
         withAnimation {
-            if !viewModel.addWord(inputText) && !inputText.isEmpty {
+            if inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                isInputFocused = false // 입력이 비어있으면 키보드 닫기
+                return
+            }
+            if !viewModel.addWord(inputText) {
                 duplicateWord = inputText
                 showingDuplicateAlert = true
             }
             inputText = ""
+            isInputFocused = true // 단어 추가 후 포커스 유지
         }
     }
 }
