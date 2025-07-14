@@ -240,7 +240,7 @@ private func TagChipListView() -> some View {
     }
 
     private func GenerateTagsView() -> some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 20) {
             Button(action: {
                 isGenerating = true
                 withAnimation(.spring()) {
@@ -254,23 +254,23 @@ private func TagChipListView() -> some View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color(red: 0.35, green: 0.40, blue: 0.95))
-                        .shadow(color: .blue.opacity(0.18), radius: 8, x: 0, y: 4)
+                        .shadow(color: .blue.opacity(0.28), radius: 14, x: 0, y: 6) // 더 선명한 그림자
                     if isGenerating {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     } else {
                         Text("Generate Tags")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 17, weight: .bold))
                             .foregroundColor(.white)
                     }
                 }
-                .frame(height: 56)
+                .frame(height: 50) // 10% 축소
                 .scaleEffect(isGenerating ? 0.97 : 1.0)
                 .animation(.spring(), value: isGenerating)
             }
             .buttonStyle(PlainButtonStyle())
             if !viewModel.generatedTags.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 0) {
                     HStack {
                         Image(systemName: "tag.fill")
                             .foregroundColor(.blue)
@@ -286,41 +286,57 @@ private func TagChipListView() -> some View {
                             }
                         }) {
                             Image(systemName: "doc.on.doc")
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(.blue)
                         }
+                        .buttonStyle(PlainButtonStyle())
                         .accessibilityLabel("Copy")
                     }
-                    Text(viewModel.generatedTags)
-                        .font(.system(size: 15))
-                        .foregroundColor(.secondary)
-                        .padding(12)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
+                    .padding(.horizontal, 12)
+                    .padding(.top, 12)
+                    .padding(.bottom, 4)
+                    // 코드박스 스타일
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        Text(viewModel.generatedTags)
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundColor(.secondary)
+                            .padding(12)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
+                            .frame(minHeight: 44, alignment: .leading)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.bottom, 8)
                 }
-                .padding()
                 .background(Color.white)
                 .cornerRadius(16)
-                .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
-                
-                HStack(spacing: 16) {
+                .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 2)
+                .padding(.top, 8)
+                .padding(.horizontal, 2)
+                .transition(.move(edge: .bottom).combined(with: .opacity)) // 슬라이드 인 애니메이션
+                .animation(.spring(), value: viewModel.generatedTags)
+                HStack(spacing: 20) {
                     Button(action: {
                         UIPasteboard.general.string = viewModel.generatedTags
                         withAnimation {
                             showingCopiedAlert = true
                         }
                     }) {
-                        HStack {
+                        HStack(spacing: 6) {
                             Image(systemName: "doc.on.doc")
+                                .font(.system(size: 16, weight: .semibold))
                             Text("Copy")
+                                .font(.system(size: 15, weight: .semibold))
                         }
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 28)
-                        .padding(.vertical, 14)
-                        .background(Color.green)
-                        .cornerRadius(20)
-                        .shadow(color: .green.opacity(0.18), radius: 4, x: 0, y: 2)
+                        .foregroundColor(.green)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.green, lineWidth: 1.5)
+                        )
                     }
+                    .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Copy")
                     Button(action: {
                         let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
@@ -334,20 +350,24 @@ private func TagChipListView() -> some View {
                             showingCopiedAlert = true
                         }
                     }) {
-                        HStack {
+                        HStack(spacing: 6) {
                             Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 16, weight: .semibold))
                             Text("Share")
+                                .font(.system(size: 15, weight: .semibold))
                         }
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 28)
-                        .padding(.vertical, 14)
-                        .background(Color.orange)
-                        .cornerRadius(20)
-                        .shadow(color: .orange.opacity(0.18), radius: 4, x: 0, y: 2)
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.orange, lineWidth: 1.5)
+                        )
                     }
+                    .buttonStyle(PlainButtonStyle())
                 }
                 .padding(.top, 8)
+                .padding(.bottom, 4)
             }
         }
         .padding(.vertical, 8)
