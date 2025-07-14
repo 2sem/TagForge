@@ -126,7 +126,7 @@ struct ContentView: View {
                 .padding(.horizontal, 16)
                 .focused($isInputFocused)
                 .onSubmit {
-                    addWord()
+                    inputText = ""
                 }
                 .background(Color.white)
             Button(action: addWord) {
