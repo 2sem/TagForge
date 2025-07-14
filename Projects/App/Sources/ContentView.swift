@@ -119,7 +119,9 @@ struct ContentView: View {
 
     private func InputWordView() -> some View {
         HStack(spacing: 0) {
-            TextField("Enter a word...", text: $inputText)
+            TextField("Enter a word...", text: $inputText, onCommit: {
+                addWord()
+            })
                 .padding(.vertical, 12)
                 .padding(.horizontal, 16)
                 .focused($isInputFocused)
@@ -148,27 +150,27 @@ struct ContentView: View {
     }
 
 private func TagChipListView() -> some View {
-        let words = (viewModel.currentWordSet.words ?? []).sorted { (word1, word2) in
-            word1.order < word2.order
-        }
-        
-        return Group {
-            if words.isEmpty {
-                EmptyWordListView()
-            } else {
+    let words = (viewModel.currentWordSet.words ?? []).sorted { (word1, word2) in
+        word1.order < word2.order
+    }
+    return Group {
+        if words.isEmpty {
+            EmptyWordListView()
+        } else {
+            ScrollViewReader { proxy in
                 ScrollView(showsIndicators: false) {
                     FlowLayout(spacing: 8) {
-                        ForEach(words, id: \.id) { word in
+                        ForEach(words, id: \ .id) { word in
                             HStack(spacing: 8) {
                                 Text(word.text)
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color(red: 0.22, green: 0.22, blue: 0.25)) // 다크 그레이
                                 Button(action: { viewModel.deleteWord(word) }) {
                                     Image(systemName: "xmark")
                                         .font(.system(size: 14, weight: .bold))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.gray)
                                         .frame(width: 20, height: 20)
-                                        .background(Color.red.opacity(0.85))
+                                        .background(Color(.systemGray5))
                                         .clipShape(Circle())
                                 }
                                 .accessibilityLabel("Delete \(word.text)")
@@ -176,17 +178,30 @@ private func TagChipListView() -> some View {
                             }
                             .padding(.vertical, 8)
                             .padding(.horizontal, 14)
-                            .background(Color(red: 0.29, green: 0.56, blue: 0.89))
+                            .background(Color(red: 0.95, green: 0.95, blue: 0.97)) // #F2F2F7
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 18)
+                                    .stroke(Color(.systemGray4), lineWidth: 1)
+                            )
                             .cornerRadius(18)
-                            .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+                            .shadow(color: .black.opacity(0.02), radius: 1, x: 0, y: 1)
+                            .id(word.id)
                         }
                     }
                     .padding(.vertical, 8)
                 }
+                .onChange(of: words.count) { _ in
+                    if let last = words.last {
+                        withAnimation {
+                            proxy.scrollTo(last.id, anchor: .bottom)
+                        }
+                    }
+                }
             }
         }
-        .padding(.bottom, 8)
     }
+    .padding(.bottom, 8)
+}
 
     private func OptionsView() -> some View {
         HStack(spacing: 8) {
