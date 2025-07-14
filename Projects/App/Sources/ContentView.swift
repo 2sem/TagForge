@@ -204,18 +204,39 @@ private func TagChipListView() -> some View {
 }
 
     private func OptionsView() -> some View {
-        HStack(spacing: 8) {
-            OptionButton(isSelected: viewModel.currentWordSet.replaceSpaces, icon: "arrow.right.to.line", text: "Replace spaces with _") {
-                viewModel.currentWordSet.replaceSpaces.toggle()
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            HStack(spacing: 8) {
+                OptionButton(
+                    isSelected: viewModel.currentWordSet.replaceSpaces,
+                    icon: "arrow.right.to.line",
+                    text: "Replace spaces with _"
+                ) {
+                    viewModel.currentWordSet.replaceSpaces.toggle()
+                }
+                OptionButton(
+                    isSelected: viewModel.currentWordSet.attachSharp,
+                    icon: "number",
+                    text: "Add #"
+                ) {
+                    viewModel.currentWordSet.attachSharp.toggle()
+                }
+                OptionButton(
+                    isSelected: viewModel.currentWordSet.generateCombinations,
+                    icon: "square.stack.3d.up",
+                    text: "Combinations"
+                ) {
+                    viewModel.currentWordSet.generateCombinations.toggle()
+                }
             }
-            OptionButton(isSelected: viewModel.currentWordSet.attachSharp, icon: "number", text: "Add #") {
-                viewModel.currentWordSet.attachSharp.toggle()
-            }
-            OptionButton(isSelected: viewModel.currentWordSet.generateCombinations, icon: "square.stack.3d.up", text: "Combinations") {
-                viewModel.currentWordSet.generateCombinations.toggle()
-            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 12)
+            .background(Color(red: 0.95, green: 0.95, blue: 0.97)) // 카드 배경 #F2F2F7
+            .cornerRadius(18)
+            .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
+            Spacer(minLength: 0)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 12)
     }
 
     private func GenerateTagsView() -> some View {
@@ -375,10 +396,11 @@ struct OptionButton: View {
             HStack(spacing: 6) {
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(isSelected ? Color.white : Color.gray)
                 Text(text)
                     .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(isSelected ? Color.white : Color.gray)
             }
-            .foregroundColor(isSelected ? .white : .gray)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(isSelected ? Color.blue : Color(.systemGray5))
