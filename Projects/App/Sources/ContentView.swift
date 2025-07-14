@@ -20,6 +20,12 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
+            // 빈 공간 탭 시 키보드 닫힘
+            Color.clear
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    isInputFocused = false
+                }
             if viewModel.isSyncing {
                 Text("Synchronizing ...")
             } else {
@@ -33,6 +39,10 @@ struct ContentView: View {
                     Spacer(minLength: 0)
                 }
                 .padding(.horizontal)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    isInputFocused = false
+                }
                 .background(Color(red: 0.98, green: 0.98, blue: 0.98).ignoresSafeArea())
             }
         }
