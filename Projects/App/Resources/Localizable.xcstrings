@@ -185,7 +185,7 @@
       }
     },
     "Default" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
