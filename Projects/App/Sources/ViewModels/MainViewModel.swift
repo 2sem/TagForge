@@ -98,21 +98,29 @@ class MainViewModel: ObservableObject {
     }
     
     func generateTags() {
-        var tags: [String] = currentWordSet.words?.map { word in
-            var tag = word.text
+        // 1. 옵션 적용 함수 (replaceSpaces만 적용)
+        func applyOptions(to tag: String) -> String {
+            var tag = tag
             if currentWordSet.replaceSpaces {
                 tag = tag.replacingOccurrences(of: " ", with: "_")
             }
-            if currentWordSet.attachSharp {
-                tag = "#" + tag
-            }
             return tag
-        } ?? []
-        
-        if currentWordSet.generateCombinations {
-            tags.append(contentsOf: generateCombinations(of: tags))
         }
-        
+        // 2. 원본 단어 리스트
+        let originalWords = currentWordSet.words?.map { $0.text } ?? []
+        // 3. 옵션 적용된 단어 리스트
+        var tags: [String] = originalWords.map { applyOptions(to: $0) }
+        // 4. 조합 생성 및 옵션 적용
+        if currentWordSet.generateCombinations {
+            let combinations = generateCombinations(of: originalWords)
+            tags.append(contentsOf: combinations.map { applyOptions(to: $0) })
+        }
+        // 5. attachSharp 옵션이 켜져 있으면 마지막에 한 번만 #을 붙임
+        if currentWordSet.attachSharp {
+            tags = tags.map { tag in
+                tag.hasPrefix("#") ? tag : "#" + tag
+            }
+        }
         generatedTags = tags.joined(separator: ", ")
     }
     
