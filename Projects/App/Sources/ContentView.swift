@@ -250,7 +250,8 @@ private func TagChipListView() -> some View {
     }
 
     private func GenerateTagsView() -> some View {
-        VStack(spacing: 20) {
+        let canGenerate = (viewModel.currentWordSet.words?.count ?? 0) > 1
+        return VStack(spacing: 20) {
             Button(action: {
                 isGenerating = true
                 withAnimation(.spring()) {
@@ -261,24 +262,22 @@ private func TagChipListView() -> some View {
                 }
                 isInputFocused = false
             }) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(red: 0.35, green: 0.40, blue: 0.95))
-                        .shadow(color: .blue.opacity(0.28), radius: 14, x: 0, y: 6) // 더 선명한 그림자
-                    if isGenerating {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    } else {
-                        Text("Generate Tags")
-                            .font(.system(size: 17, weight: .bold))
-                            .foregroundColor(.white)
-                    }
+                HStack(spacing: 6) {
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundColor(!canGenerate ? Color(.systemGray3) : Color.white)
+                    Text("Generate Tags")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundColor(!canGenerate ? Color(.systemGray3) : Color.white)
                 }
-                .frame(height: 50) // 10% 축소
-                .scaleEffect(isGenerating ? 0.97 : 1.0)
-                .animation(.spring(), value: isGenerating)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 14)
+                .background(!canGenerate ? Color(.systemGray5) : Color.blue)
+                .cornerRadius(20)
+                .shadow(color: canGenerate ? Color.blue.opacity(0.12) : .clear, radius: 2, x: 0, y: 1)
             }
             .buttonStyle(PlainButtonStyle())
+            .disabled(!canGenerate)
             if !viewModel.generatedTags.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
@@ -421,23 +420,25 @@ struct OptionButton: View {
     let icon: String
     let text: LocalizedStringKey
     let action: () -> Void
+    var isDisabled: Bool = false
     var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(isSelected ? Color.white : Color.gray)
+                    .foregroundColor(isDisabled ? Color(.systemGray3) : (isSelected ? Color.white : Color.gray))
                 Text(text)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(isSelected ? Color.white : Color.gray)
+                    .foregroundColor(isDisabled ? Color(.systemGray3) : (isSelected ? Color.white : Color.gray))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(isSelected ? Color.blue : Color(.systemGray5))
+            .background(isDisabled ? Color(.systemGray5) : (isSelected ? Color.blue : Color(.systemGray5)))
             .cornerRadius(16)
-            .shadow(color: isSelected ? Color.blue.opacity(0.12) : .clear, radius: 2, x: 0, y: 1)
+            .shadow(color: isSelected && !isDisabled ? Color.blue.opacity(0.12) : .clear, radius: 2, x: 0, y: 1)
         }
         .buttonStyle(PlainButtonStyle())
+        .disabled(isDisabled)
     }
 }
 
