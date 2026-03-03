@@ -17,7 +17,7 @@ let project = Project(
     targets: [
         Target.target(
             name: .projects.app,
-            destinations: [.iPhone, .iPad],
+            destinations: [.iPhone, .iPad, .macWithiPadDesign],
             product: .app,
             bundleId: Constants.baseBundleId,
             deploymentTargets: .iOS("18.0"),
