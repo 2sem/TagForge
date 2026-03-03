@@ -1,5 +1,8 @@
 import Foundation
 import Combine
+import OSLog
+
+private let logger = Logger(subsystem: "com.toyboy2.tagforge", category: "MainViewModel")
 
 @MainActor
 class MainViewModel: ObservableObject {
@@ -71,6 +74,41 @@ class MainViewModel: ObservableObject {
         return true
     }
     
+    /// Parses `input` into individual tokens and adds each one as a word.
+    ///
+    /// Supported formats:
+    /// - Hashtag strings: `#travel #Seoul #food` → splits on whitespace, strips leading `#`
+    /// - Comma / newline separated: `travel, Seoul, food` → splits on `,` or `\n`, trims whitespace
+    ///
+    /// - Returns: A tuple `(added, skipped)` where `skipped` counts duplicates that were not inserted.
+    func addWords(_ input: String) -> (added: Int, skipped: Int) {
+        let tokens: [String]
+        if input.contains("#") {
+            tokens = input
+                .components(separatedBy: .whitespaces)
+                .map { $0.hasPrefix("#") ? String($0.dropFirst()) : $0 }
+        } else {
+            tokens = input
+                .components(separatedBy: CharacterSet(charactersIn: ",\n"))
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+        }
+
+        let nonEmpty = tokens.filter { !$0.isEmpty }
+        logger.debug("addWords: parsed \(nonEmpty.count) tokens from input")
+
+        var added = 0
+        var skipped = 0
+        for token in nonEmpty {
+            if addWord(token) {
+                added += 1
+            } else {
+                skipped += 1
+            }
+        }
+        logger.info("addWords: added=\(added) skipped=\(skipped)")
+        return (added, skipped)
+    }
+
     func deleteWord(_ word: WordModel) {
         if let index = currentWordSet.words?.firstIndex(of: word) {
             currentWordSet.words?.remove(at: index)

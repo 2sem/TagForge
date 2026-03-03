@@ -1,6 +1,9 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import OSLog
+
+private let contentViewLogger = Logger(subsystem: "com.toyboy2.tagforge", category: "ContentView")
 
 struct ContentView: View {
     @Binding var isSyncing: Bool
@@ -17,6 +20,9 @@ struct ContentView: View {
     @State private var editedSetName: String = ""
     @State private var isGenerating: Bool = false
     @State private var showingWordSetPicker = false
+    @State private var showingBatchImportAlert = false
+    @State private var batchImportAdded: Int = 0
+    @State private var batchImportSkipped: Int = 0
 
     var body: some View {
         ZStack {
@@ -54,6 +60,15 @@ struct ContentView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text("'\(duplicateWord)' is already in the list")
+        }
+        .alert("Words Added", isPresented: $showingBatchImportAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            if batchImportSkipped > 0 {
+                Text("\(batchImportAdded) words added, \(batchImportSkipped) duplicates skipped")
+            } else {
+                Text("\(batchImportAdded) words added")
+            }
         }
         .alert("New Set Name", isPresented: $showingSetNameDialog) {
             TextField("Set Name", text: $newSetName)
@@ -400,17 +415,34 @@ private func TagChipListView() -> some View {
     }
 
     private func addWord() {
-        withAnimation {
-            if inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                isInputFocused = false // 입력이 비어있으면 키보드 닫기
-                return
+        let trimmed = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            isInputFocused = false
+            return
+        }
+
+        // Detect multi-word paste: contains '#', ',', or '\n'
+        let isMultiWord = trimmed.contains("#") || trimmed.contains(",") || trimmed.contains("\n")
+
+        if isMultiWord {
+            contentViewLogger.debug("addWord: multi-word input detected, delegating to addWords")
+            withAnimation {
+                let result = viewModel.addWords(trimmed)
+                batchImportAdded = result.added
+                batchImportSkipped = result.skipped
+                inputText = ""
+                isInputFocused = true
             }
-            if !viewModel.addWord(inputText) {
-                duplicateWord = inputText
-                showingDuplicateAlert = true
+            showingBatchImportAlert = true
+        } else {
+            withAnimation {
+                if !viewModel.addWord(trimmed) {
+                    duplicateWord = trimmed
+                    showingDuplicateAlert = true
+                }
+                inputText = ""
+                isInputFocused = true
             }
-            inputText = ""
-            isInputFocused = true // 단어 추가 후 포커스 유지
         }
     }
 }
