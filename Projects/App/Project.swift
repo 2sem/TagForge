@@ -20,7 +20,7 @@ let project = Project(
             destinations: [.iPhone, .iPad],
             product: .app,
             bundleId: Constants.baseBundleId,
-            deploymentTargets: .iOS("17.0"),
+            deploymentTargets: .iOS("18.0"),
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "TagForge",
                 "UILaunchStoryboardName": "LaunchScreen",
