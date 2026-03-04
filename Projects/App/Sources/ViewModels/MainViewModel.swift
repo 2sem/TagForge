@@ -10,6 +10,10 @@ class MainViewModel: ObservableObject {
     @Published var currentWordSet: WordSetModel!
     @Published var generatedTags: String = ""
     @Published var isSyncing: Bool = true
+    @Published var isLimitActive: Bool = false
+    @Published var selectedPreset: PlatformPreset? = nil
+    @Published var isPresetCustomized: Bool = false
+    @Published var showingPaywall: Bool = false
     
     private let storageManager: WordSetManager
     private var cancellables = Swift.Set<AnyCancellable>()
@@ -53,11 +57,17 @@ class MainViewModel: ObservableObject {
     }
     
     private func loadCurrentSet() {
-        currentWordSet = wordSets.first
+        currentWordSet = wordSets.first;
+        isLimitActive = currentWordSet?.characterLimit != nil;
+        selectedPreset = currentWordSet?.platformPreset.flatMap { PlatformPreset(rawValue: $0) };
+        isPresetCustomized = false;
     }
     
     func loadWord(set: WordSetModel) {
-        currentWordSet = set
+        currentWordSet = set;
+        isLimitActive = currentWordSet.characterLimit != nil;
+        selectedPreset = currentWordSet.platformPreset.flatMap { PlatformPreset(rawValue: $0) };
+        isPresetCustomized = false;
     }
     
     func addWord(_ word: String) -> Bool {
@@ -138,29 +148,62 @@ class MainViewModel: ObservableObject {
     func generateTags() {
         // 1. 옵션 적용 함수 (replaceSpaces만 적용)
         func applyOptions(to tag: String) -> String {
-            var tag = tag
+            var tag = tag;
             if currentWordSet.replaceSpaces {
-                tag = tag.replacingOccurrences(of: " ", with: "_")
+                tag = tag.replacingOccurrences(of: " ", with: "_");
             }
-            return tag
+            return tag;
         }
         // 2. 원본 단어 리스트
-        let originalWords = currentWordSet.words?.map { $0.text } ?? []
+        let originalWords = currentWordSet.words?.map { $0.text } ?? [];
         // 3. 옵션 적용된 단어 리스트
-        var tags: [String] = originalWords.map { applyOptions(to: $0) }
+        var tags: [String] = originalWords.map { applyOptions(to: $0) };
         // 4. 조합 생성 및 옵션 적용
         if currentWordSet.generateCombinations {
-            let combinations = generateCombinations(of: originalWords)
-            tags.append(contentsOf: combinations.map { applyOptions(to: $0) })
+            let combinations = generateCombinations(of: originalWords);
+            tags.append(contentsOf: combinations.map { applyOptions(to: $0) });
         }
         // 5. attachSharp 옵션이 켜져 있으면 마지막에 한 번만 #을 붙임
         if currentWordSet.attachSharp {
             tags = tags.map { tag in
-                tag.hasPrefix("#") ? tag : "#" + tag
-            }
+                tag.hasPrefix("#") ? tag : "#" + tag;
+            };
         }
-        let separator = currentWordSet.attachSharp ? " " : ", "
-        generatedTags = tags.joined(separator: separator)
+        // 6. Character limit — drop whole tags from the end until the string fits
+        let separator = currentWordSet.attachSharp ? " " : ", ";
+        if isLimitActive, let limit = currentWordSet.characterLimit, !tags.isEmpty {
+            var result = tags.joined(separator: separator);
+            if result.count > limit {
+                var kept = tags;
+                while !kept.isEmpty && kept.joined(separator: separator).count > limit {
+                    kept.removeLast();
+                }
+                result = kept.joined(separator: separator);
+            }
+            generatedTags = result;
+        } else {
+            generatedTags = tags.joined(separator: separator);
+        }
+    }
+
+    func applyPreset(_ preset: PlatformPreset) {
+        currentWordSet.characterLimit = preset.characterLimit;
+        currentWordSet.attachSharp = preset.useHashSeparator;
+        currentWordSet.platformPreset = preset.rawValue;
+        selectedPreset = preset;
+        isPresetCustomized = false;
+    }
+
+    func onSliderChanged(to value: Int) {
+        currentWordSet.characterLimit = value;
+        if let preset = selectedPreset {
+            isPresetCustomized = value != preset.characterLimit;
+            if isPresetCustomized {
+                currentWordSet.platformPreset = nil;
+            }
+        } else {
+            currentWordSet.platformPreset = nil;
+        }
     }
     
     private func generateCombinations(of words: [String]) -> [String] {

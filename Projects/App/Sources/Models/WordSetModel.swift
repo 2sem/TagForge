@@ -15,12 +15,24 @@ final class WordSetModel {
     var replaceSpaces: Bool = false // 기본값 추가
     var attachSharp: Bool = false // 기본값 추가
     var generateCombinations: Bool = false // 기본값 추가
-    
-    init(name: String = "", words: [WordModel] = [], replaceSpaces: Bool = false, attachSharp: Bool = false, generateCombinations: Bool = false) { // 기본값 추가
+    var characterLimit: Int? = nil
+    var platformPreset: String? = nil // raw value of PlatformPreset
+
+    init(
+        name: String = "",
+        words: [WordModel] = [],
+        replaceSpaces: Bool = false,
+        attachSharp: Bool = false,
+        generateCombinations: Bool = false,
+        characterLimit: Int? = nil,
+        platformPreset: String? = nil
+    ) { // 기본값 추가
         self.name = name
         self.words = words
         self.replaceSpaces = replaceSpaces
         self.attachSharp = attachSharp
         self.generateCombinations = generateCombinations
+        self.characterLimit = characterLimit
+        self.platformPreset = platformPreset
     }
 }

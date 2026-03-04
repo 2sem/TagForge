@@ -88,6 +88,22 @@ struct ContentView: View {
         .sheet(isPresented: $showingWordSetPicker) {
             WordSetPickerView(viewModel: viewModel, isPresented: $showingWordSetPicker)
         }
+        .sheet(isPresented: $viewModel.showingPaywall) {
+            VStack(spacing: 20) {
+                Text(NSLocalizedString("paywall.title", comment: ""))
+                    .font(.headline)
+                Text(NSLocalizedString("paywall.body", comment: ""))
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.secondary)
+                Button(NSLocalizedString("paywall.dismiss", comment: "")) {
+                    viewModel.showingPaywall = false;
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
+            .presentationDetents([.medium])
+        }
         .overlay(
             Group {
                 if showingCopiedAlert {
@@ -229,39 +245,138 @@ private func TagChipListView() -> some View {
 }
 
     private func OptionsView() -> some View {
-        HStack(spacing: 0) {
-            Spacer(minLength: 0)
-            HStack(spacing: 8) {
+        VStack(spacing: 0) {
+            FlowLayout(spacing: 8) {
                 OptionButton(
                     isSelected: viewModel.currentWordSet.replaceSpaces,
                     icon: "arrow.right.to.line",
                     text: "Replace spaces with _"
                 ) {
-                    viewModel.currentWordSet.replaceSpaces.toggle()
+                    viewModel.currentWordSet.replaceSpaces.toggle();
                 }
                 OptionButton(
                     isSelected: viewModel.currentWordSet.attachSharp,
                     icon: "number",
                     text: "Add #"
                 ) {
-                    viewModel.currentWordSet.attachSharp.toggle()
+                    viewModel.currentWordSet.attachSharp.toggle();
                 }
                 OptionButton(
                     isSelected: viewModel.currentWordSet.generateCombinations,
                     icon: "square.stack.3d.up",
                     text: "Combinations"
                 ) {
-                    viewModel.currentWordSet.generateCombinations.toggle()
+                    viewModel.currentWordSet.generateCombinations.toggle();
+                }
+                OptionButton(
+                    isSelected: viewModel.isLimitActive,
+                    icon: "ruler",
+                    text: "Char Limit"
+                ) {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        viewModel.isLimitActive.toggle();
+                        if !viewModel.isLimitActive {
+                            viewModel.currentWordSet.characterLimit = nil;
+                        }
+                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred();
                 }
             }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 12)
-            .background(Color(red: 0.95, green: 0.95, blue: 0.97)) // 카드 배경 #F2F2F7
-            .cornerRadius(18)
-            .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
-            Spacer(minLength: 0)
+            if viewModel.isLimitActive {
+                characterLimitControlView()
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
         .padding(.vertical, 12)
+        .padding(.horizontal, 12)
+        .background(Color(red: 0.95, green: 0.95, blue: 0.97)) // 카드 배경 #F2F2F7
+        .cornerRadius(18)
+        .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
+        .padding(.vertical, 12)
+    }
+
+    private func characterLimitControlView() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Divider()
+
+            // Platform preset chips
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(PlatformPreset.allCases, id: \.self) { preset in
+                        platformPresetChip(preset)
+                    }
+                }
+                .padding(.horizontal, 4)
+            }
+
+            // Slider row
+            HStack(spacing: 12) {
+                Slider(
+                    value: Binding(
+                        get: { Double(viewModel.currentWordSet.characterLimit ?? 2200) },
+                        set: { viewModel.onSliderChanged(to: Int($0)) }
+                    ),
+                    in: 100...2200,
+                    step: 10
+                )
+                .tint(.blue)
+                .accessibilityLabel(NSLocalizedString("option.charlimit", comment: ""))
+
+                Text("\(viewModel.currentWordSet.characterLimit ?? 2200)")
+                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                    .foregroundColor(.secondary)
+                    .frame(minWidth: 40, alignment: .trailing)
+                    .monospacedDigit()
+            }
+        }
+        .padding(.top, 4)
+    }
+
+    private func platformPresetChip(_ preset: PlatformPreset) -> some View {
+        let isSelected = viewModel.selectedPreset == preset;
+        let isCustomized = isSelected && viewModel.isPresetCustomized;
+
+        return Button {
+            if preset.isPaidLocked {
+                viewModel.showingPaywall = true;
+            } else {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                    viewModel.applyPreset(preset);
+                }
+                UISelectionFeedbackGenerator().selectionChanged();
+            }
+        } label: {
+            VStack(spacing: 2) {
+                ZStack(alignment: .topTrailing) {
+                    VStack(spacing: 2) {
+                        Text(preset.displayName)
+                            .font(.system(size: 13, weight: .semibold))
+                        if isCustomized {
+                            Text(NSLocalizedString("preset.custom", comment: ""))
+                                .font(.system(size: 10))
+                                .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+                        }
+                    }
+                    if preset.isPaidLocked {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(.orange)
+                            .offset(x: 4, y: -4)
+                    }
+                }
+                Text(preset.limitLabel)
+                    .font(.system(size: 10))
+                    .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(isSelected ? Color.blue : Color(.systemGray5))
+            .cornerRadius(12)
+            .frame(minWidth: 56, minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .accessibilityLabel("\(preset.displayName), \(preset.limitLabel) characters\(preset.isPaidLocked ? ", requires purchase" : "")\(isCustomized ? ", custom" : "")")
+        .accessibilityHint(preset.isPaidLocked ? NSLocalizedString("preset.locked.hint", comment: "") : "")
     }
 
     private func GenerateTagsView() -> some View {
@@ -301,12 +416,20 @@ private func TagChipListView() -> some View {
                         Text("Generated Tags")
                             .font(.system(size: 16, weight: .bold))
                         Spacer()
+                        if viewModel.isLimitActive, let limit = viewModel.currentWordSet.characterLimit {
+                            let count = viewModel.generatedTags.count;
+                            Text("\(count) / \(limit)")
+                                .font(.caption)
+                                .monospacedDigit()
+                                .foregroundColor(count > limit ? .red : .secondary)
+                                .accessibilityLabel(String(format: NSLocalizedString("output.counter.accessibility", comment: ""), count, limit))
+                        }
                         Button(action: {
                             #if os(iOS)
-                            UIPasteboard.general.string = viewModel.generatedTags
+                            UIPasteboard.general.string = viewModel.generatedTags;
                             #endif
                             withAnimation {
-                                showingCopiedAlert = true
+                                showingCopiedAlert = true;
                             }
                         }) {
                             Image(systemName: "doc.on.doc")
