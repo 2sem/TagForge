@@ -10,10 +10,6 @@ class MainViewModel: ObservableObject {
     @Published var currentWordSet: WordSetModel!
     @Published var generatedTags: String = ""
     @Published var isSyncing: Bool = true
-    @Published var isLimitActive: Bool = false
-    @Published var selectedPreset: PlatformPreset? = nil
-    @Published var isPresetCustomized: Bool = false
-    @Published var showingPaywall: Bool = false
     
     private let storageManager: WordSetManager
     private var cancellables = Swift.Set<AnyCancellable>()
@@ -58,16 +54,10 @@ class MainViewModel: ObservableObject {
     
     private func loadCurrentSet() {
         currentWordSet = wordSets.first;
-        isLimitActive = currentWordSet?.characterLimit != nil;
-        selectedPreset = currentWordSet?.platformPreset.flatMap { PlatformPreset(rawValue: $0) };
-        isPresetCustomized = false;
     }
-    
+
     func loadWord(set: WordSetModel) {
         currentWordSet = set;
-        isLimitActive = currentWordSet.characterLimit != nil;
-        selectedPreset = currentWordSet.platformPreset.flatMap { PlatformPreset(rawValue: $0) };
-        isPresetCustomized = false;
     }
     
     func addWord(_ word: String) -> Bool {
@@ -169,43 +159,11 @@ class MainViewModel: ObservableObject {
                 tag.hasPrefix("#") ? tag : "#" + tag;
             };
         }
-        // 6. Character limit — drop whole tags from the end until the string fits
+        // 6. Join tags
         let separator = currentWordSet.attachSharp ? " " : ", ";
-        if isLimitActive, let limit = currentWordSet.characterLimit, !tags.isEmpty {
-            var result = tags.joined(separator: separator);
-            if result.count > limit {
-                var kept = tags;
-                while !kept.isEmpty && kept.joined(separator: separator).count > limit {
-                    kept.removeLast();
-                }
-                result = kept.joined(separator: separator);
-            }
-            generatedTags = result;
-        } else {
-            generatedTags = tags.joined(separator: separator);
-        }
+        generatedTags = tags.joined(separator: separator);
     }
 
-    func applyPreset(_ preset: PlatformPreset) {
-        currentWordSet.characterLimit = preset.characterLimit;
-        currentWordSet.attachSharp = preset.useHashSeparator;
-        currentWordSet.platformPreset = preset.rawValue;
-        selectedPreset = preset;
-        isPresetCustomized = false;
-    }
-
-    func onSliderChanged(to value: Int) {
-        currentWordSet.characterLimit = value;
-        if let preset = selectedPreset {
-            isPresetCustomized = value != preset.characterLimit;
-            if isPresetCustomized {
-                currentWordSet.platformPreset = nil;
-            }
-        } else {
-            currentWordSet.platformPreset = nil;
-        }
-    }
-    
     private func generateCombinations(of words: [String]) -> [String] {
         var combinations = [String]()
         let maxLength = min(currentWordSet.maxCombinationLength, words.count);
