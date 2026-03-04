@@ -23,6 +23,19 @@
     "%@ tags" : {
 
     },
+    "%@ words added" : {
+
+    },
+    "%@ words added, %@ duplicates skipped" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ words added, %2$@ duplicates skipped"
+          }
+        }
+      }
+    },
     "%lld tags" : {
       "extractionState" : "manual",
       "localizations" : {
