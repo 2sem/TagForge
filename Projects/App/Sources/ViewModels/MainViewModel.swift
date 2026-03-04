@@ -53,11 +53,11 @@ class MainViewModel: ObservableObject {
     }
     
     private func loadCurrentSet() {
-        currentWordSet = wordSets.first
+        currentWordSet = wordSets.first;
     }
-    
+
     func loadWord(set: WordSetModel) {
-        currentWordSet = set
+        currentWordSet = set;
     }
     
     func addWord(_ word: String) -> Bool {
@@ -138,34 +138,37 @@ class MainViewModel: ObservableObject {
     func generateTags() {
         // 1. 옵션 적용 함수 (replaceSpaces만 적용)
         func applyOptions(to tag: String) -> String {
-            var tag = tag
+            var tag = tag;
             if currentWordSet.replaceSpaces {
-                tag = tag.replacingOccurrences(of: " ", with: "_")
+                tag = tag.replacingOccurrences(of: " ", with: "_");
             }
-            return tag
+            return tag;
         }
         // 2. 원본 단어 리스트
-        let originalWords = currentWordSet.words?.map { $0.text } ?? []
+        let originalWords = currentWordSet.words?.map { $0.text } ?? [];
         // 3. 옵션 적용된 단어 리스트
-        var tags: [String] = originalWords.map { applyOptions(to: $0) }
+        var tags: [String] = originalWords.map { applyOptions(to: $0) };
         // 4. 조합 생성 및 옵션 적용
         if currentWordSet.generateCombinations {
-            let combinations = generateCombinations(of: originalWords)
-            tags.append(contentsOf: combinations.map { applyOptions(to: $0) })
+            let combinations = generateCombinations(of: originalWords);
+            tags.append(contentsOf: combinations.map { applyOptions(to: $0) });
         }
         // 5. attachSharp 옵션이 켜져 있으면 마지막에 한 번만 #을 붙임
         if currentWordSet.attachSharp {
             tags = tags.map { tag in
-                tag.hasPrefix("#") ? tag : "#" + tag
-            }
+                tag.hasPrefix("#") ? tag : "#" + tag;
+            };
         }
-        let separator = currentWordSet.attachSharp ? " " : ", "
-        generatedTags = tags.joined(separator: separator)
+        // 6. Join tags
+        let separator = currentWordSet.attachSharp ? " " : ", ";
+        generatedTags = tags.joined(separator: separator);
     }
-    
+
     private func generateCombinations(of words: [String]) -> [String] {
         var combinations = [String]()
-        for length in 2...words.count {
+        let maxLength = min(currentWordSet.maxCombinationLength, words.count);
+        guard maxLength >= 2 else { return combinations }
+        for length in 2...maxLength {
             for combination in words.combinations(ofLength: length) {
                 combinations.append(combination.joined())
             }

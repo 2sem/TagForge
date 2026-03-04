@@ -229,38 +229,60 @@ private func TagChipListView() -> some View {
 }
 
     private func OptionsView() -> some View {
-        HStack(spacing: 0) {
-            Spacer(minLength: 0)
-            HStack(spacing: 8) {
+        VStack(spacing: 0) {
+            FlowLayout(spacing: 8) {
                 OptionButton(
                     isSelected: viewModel.currentWordSet.replaceSpaces,
                     icon: "arrow.right.to.line",
                     text: "Replace spaces with _"
                 ) {
-                    viewModel.currentWordSet.replaceSpaces.toggle()
+                    viewModel.currentWordSet.replaceSpaces.toggle();
                 }
                 OptionButton(
                     isSelected: viewModel.currentWordSet.attachSharp,
                     icon: "number",
                     text: "Add #"
                 ) {
-                    viewModel.currentWordSet.attachSharp.toggle()
+                    viewModel.currentWordSet.attachSharp.toggle();
                 }
                 OptionButton(
                     isSelected: viewModel.currentWordSet.generateCombinations,
                     icon: "square.stack.3d.up",
                     text: "Combinations"
                 ) {
-                    viewModel.currentWordSet.generateCombinations.toggle()
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        viewModel.currentWordSet.generateCombinations.toggle();
+                    }
                 }
             }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 12)
-            .background(Color(red: 0.95, green: 0.95, blue: 0.97)) // 카드 배경 #F2F2F7
-            .cornerRadius(18)
-            .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
-            Spacer(minLength: 0)
+            if viewModel.currentWordSet.generateCombinations {
+                HStack {
+                    Text(NSLocalizedString("combinations.max_length", comment: ""))
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Stepper(
+                        value: Binding(
+                            get: { viewModel.currentWordSet.maxCombinationLength },
+                            set: { viewModel.currentWordSet.maxCombinationLength = $0 }
+                        ),
+                        in: 2...10,
+                        step: 1
+                    ) {
+                        Text("\(viewModel.currentWordSet.maxCombinationLength)")
+                            .font(.subheadline.monospacedDigit())
+                            .frame(minWidth: 20, alignment: .trailing)
+                    }
+                }
+                .padding(.horizontal, 4)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 12)
+        .background(Color(red: 0.95, green: 0.95, blue: 0.97)) // 카드 배경 #F2F2F7
+        .cornerRadius(18)
+        .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
         .padding(.vertical, 12)
     }
 
@@ -303,10 +325,10 @@ private func TagChipListView() -> some View {
                         Spacer()
                         Button(action: {
                             #if os(iOS)
-                            UIPasteboard.general.string = viewModel.generatedTags
+                            UIPasteboard.general.string = viewModel.generatedTags;
                             #endif
                             withAnimation {
-                                showingCopiedAlert = true
+                                showingCopiedAlert = true;
                             }
                         }) {
                             Image(systemName: "doc.on.doc")
