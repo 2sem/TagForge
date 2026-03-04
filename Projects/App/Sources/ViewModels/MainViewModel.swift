@@ -159,7 +159,8 @@ class MainViewModel: ObservableObject {
                 tag.hasPrefix("#") ? tag : "#" + tag
             }
         }
-        generatedTags = tags.joined(separator: ", ")
+        let separator = currentWordSet.attachSharp ? " " : ", "
+        generatedTags = tags.joined(separator: separator)
     }
     
     private func generateCombinations(of words: [String]) -> [String] {
