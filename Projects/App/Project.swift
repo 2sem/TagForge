@@ -34,5 +34,17 @@ let project = Project(
                 .project(name: .projects.dynamicThirdParty)
             ]
         )
+    ],
+    schemes: [
+        .scheme(
+            name: "App-Screenshots",
+            buildAction: .buildAction(targets: [.target(.projects.app)]),
+            runAction: .runAction(
+                configuration: "Debug",
+                arguments: .arguments(launchArguments: [
+                    .launchArgument(name: "-SCREENSHOT_MODE", isEnabled: true)
+                ])
+            )
+        )
     ]
 ) 
