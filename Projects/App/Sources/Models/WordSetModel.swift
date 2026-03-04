@@ -15,6 +15,7 @@ final class WordSetModel {
     var replaceSpaces: Bool = false // 기본값 추가
     var attachSharp: Bool = false // 기본값 추가
     var generateCombinations: Bool = false // 기본값 추가
+    var maxCombinationLength: Int = 2
     var characterLimit: Int? = nil
     var platformPreset: String? = nil // raw value of PlatformPreset
 
@@ -24,6 +25,7 @@ final class WordSetModel {
         replaceSpaces: Bool = false,
         attachSharp: Bool = false,
         generateCombinations: Bool = false,
+        maxCombinationLength: Int = 2,
         characterLimit: Int? = nil,
         platformPreset: String? = nil
     ) { // 기본값 추가
@@ -32,6 +34,7 @@ final class WordSetModel {
         self.replaceSpaces = replaceSpaces
         self.attachSharp = attachSharp
         self.generateCombinations = generateCombinations
+        self.maxCombinationLength = maxCombinationLength
         self.characterLimit = characterLimit
         self.platformPreset = platformPreset
     }

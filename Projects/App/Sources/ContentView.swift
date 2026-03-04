@@ -266,7 +266,9 @@ private func TagChipListView() -> some View {
                     icon: "square.stack.3d.up",
                     text: "Combinations"
                 ) {
-                    viewModel.currentWordSet.generateCombinations.toggle();
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        viewModel.currentWordSet.generateCombinations.toggle();
+                    }
                 }
                 OptionButton(
                     isSelected: viewModel.isLimitActive,
@@ -281,6 +283,28 @@ private func TagChipListView() -> some View {
                     }
                     UIImpactFeedbackGenerator(style: .light).impactOccurred();
                 }
+            }
+            if viewModel.currentWordSet.generateCombinations {
+                HStack {
+                    Text(NSLocalizedString("combinations.max_length", comment: ""))
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Stepper(
+                        value: Binding(
+                            get: { viewModel.currentWordSet.maxCombinationLength },
+                            set: { viewModel.currentWordSet.maxCombinationLength = $0 }
+                        ),
+                        in: 2...10,
+                        step: 1
+                    ) {
+                        Text("\(viewModel.currentWordSet.maxCombinationLength)")
+                            .font(.subheadline.monospacedDigit())
+                            .frame(minWidth: 20, alignment: .trailing)
+                    }
+                }
+                .padding(.horizontal, 4)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
             if viewModel.isLimitActive {
                 characterLimitControlView()

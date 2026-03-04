@@ -208,7 +208,9 @@ class MainViewModel: ObservableObject {
     
     private func generateCombinations(of words: [String]) -> [String] {
         var combinations = [String]()
-        for length in 2...words.count {
+        let maxLength = min(currentWordSet.maxCombinationLength, words.count);
+        guard maxLength >= 2 else { return combinations }
+        for length in 2...maxLength {
             for combination in words.combinations(ofLength: length) {
                 combinations.append(combination.joined())
             }
