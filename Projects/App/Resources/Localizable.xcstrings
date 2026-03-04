@@ -23,6 +23,32 @@
     "%@ tags" : {
 
     },
+    "%@ words added" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어 %@개 추가됨"
+          }
+        }
+      }
+    },
+    "%@ words added, %@ duplicates skipped" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ words added, %2$@ duplicates skipped"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어 %1$@개 추가됨, 중복 %2$@개 건너뜀"
+          }
+        }
+      }
+    },
     "%lld tags" : {
       "extractionState" : "manual",
       "localizations" : {
