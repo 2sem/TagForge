@@ -23,16 +23,6 @@
     "%@" : {
 
     },
-    "%@ / %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ / %2$@"
-          }
-        }
-      }
-    },
     "%@ tags" : {
 
     },
@@ -197,13 +187,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Max length"
+            "value" : "Max words"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최대 길이"
+            "value" : "최대 단어 수"
           }
         }
       }
