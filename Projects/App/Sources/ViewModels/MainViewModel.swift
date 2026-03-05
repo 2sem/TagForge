@@ -27,22 +27,41 @@ class MainViewModel: ObservableObject {
     
     init(storageManager: WordSetManager = .shared) {
         self.storageManager = storageManager
-        // NSManagedObjectContextDidSave Notification 구독
+
+        // Ongoing sync: reload when iCloud pushes changes after initial launch
         storageManager.remoteChangePublisher
             .combineLatest($isSyncing)
             .filter { (_, isSyncing) in isSyncing }
             .map { (notification, _) in notification }
             .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] (notification) in
-                print("WordSetManager.remomteChange. \(notification.userInfo)")
+            .sink { [weak self] _ in
                 self?.loadWordSets()
                 self?.isSyncing = false
             }
             .store(in: &cancellables)
-        
-        // 초기 데이터 로드
-        loadWordSets()
+
+        // Raw load — do NOT call createDefaultWordSetIfNeeded yet.
+        // If the local store is empty this could be a reinstall with iCloud data on the way.
+        wordSets = storageManager.loadWordSets()
+
+        if wordSets.isEmpty {
+            // Wait for the first CloudKit import to complete before deciding whether to create
+            // a default set. The import event fires even when iCloud has no data (0 records),
+            // so new users are not stuck waiting. 'endDate != nil' confirms the operation finished.
+            storageManager.cloudKitEventPublisher
+                .filter { $0.type == .import && $0.endDate != nil }
+                .first()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    self?.loadWordSets()   // safe now — iCloud answer is known
+                    self?.isSyncing = false
+                }
+                .store(in: &cancellables)
+        } else {
+            loadCurrentSet()
+            // isSyncing stays true; remoteChangePublisher clears it after the first sync notification
+        }
     }
     
     func loadWordSets() {

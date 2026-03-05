@@ -26,6 +26,17 @@ class WordSetManager {
         }
     }
     
+    // CloudKit import event publisher — fires when the initial iCloud import finishes
+    // (regardless of whether data was found), which is the earliest safe moment to create defaults.
+    var cloudKitEventPublisher: AnyPublisher<NSPersistentCloudKitContainer.Event, Never> {
+        NotificationCenter.default
+            .publisher(for: NSPersistentCloudKitContainer.eventChangedNotification)
+            .compactMap {
+                $0.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey] as? NSPersistentCloudKitContainer.Event
+            }
+            .eraseToAnyPublisher()
+    }
+
     // NSManagedObjectContextDidSave Notification Publisher
     var remoteChangePublisher: AnyPublisher<Notification, Never> {
 //        guard let nsContext = (modelContext as? NSObject)?.value(forKey: "context") as? NSManagedObjectContext else {
