@@ -3,6 +3,7 @@ import SwiftUI
 struct GeneratedTagsSheet: View {
     @ObservedObject var viewModel: MainViewModel;
     @State private var removedIds: Swift.Set<UUID> = [];
+    @State private var showCopied: Bool = false;
 
     private var visibleTags: [GeneratedTag] {
         viewModel.generatedTagList.filter { !removedIds.contains($0.id) };
@@ -75,9 +76,17 @@ struct GeneratedTagsSheet: View {
                 }
                 Spacer()
                 Button {
-                    UIPasteboard.general.string = copyableString;
+                    UIPasteboard.general.string = copyableString
+                    showCopied = true
                 } label: {
                     Label(NSLocalizedString("sheet.generatedTags.copy", comment: ""), systemImage: "doc.on.doc")
+                }
+                .onChange(of: showCopied) { _, newValue in
+                    guard newValue else { return }
+                    Task {
+                        try? await Task.sleep(for: .seconds(1.5))
+                        showCopied = false
+                    }
                 }
                 .buttonStyle(.bordered)
                 .tint(.blue)
@@ -95,6 +104,18 @@ struct GeneratedTagsSheet: View {
             .padding(.bottom, 4)
             .background(.regularMaterial)
         }
+        .overlay(alignment: .bottom) {
+            if showCopied {
+                Text(NSLocalizedString("sheet.generatedTags.copied", comment: ""))
+                    .font(.subheadline.weight(.medium))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.thinMaterial, in: Capsule())
+                    .padding(.bottom, 80)
+                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: showCopied)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .onDisappear {
