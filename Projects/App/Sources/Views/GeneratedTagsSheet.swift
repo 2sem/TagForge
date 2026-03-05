@@ -108,9 +108,10 @@ struct GeneratedTagsSheet: View {
             if showCopied {
                 Text(NSLocalizedString("sheet.generatedTags.copied", comment: ""))
                     .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
-                    .background(.thinMaterial, in: Capsule())
+                    .background(Color.black.opacity(0.75), in: Capsule())
                     .padding(.bottom, 80)
                     .transition(.opacity.combined(with: .scale(scale: 0.9)))
             }
