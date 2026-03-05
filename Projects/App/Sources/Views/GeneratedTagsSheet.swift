@@ -109,7 +109,7 @@ struct GeneratedTagsSheet: View {
                 .lineLimit(2)
             Button {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
-                    removedIds.insert(tag.id);
+                    _ = removedIds.insert(tag.id);
                 }
 
             } label: {
