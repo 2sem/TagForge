@@ -140,40 +140,6 @@
         }
       }
     },
-    "accessibility.option.replaceSpaces" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Replace spaces with underscore"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "공백을 밑줄로 교체"
-          }
-        }
-      }
-    },
-    "accessibility.option.replaceSpaces.hint" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spaces in each word become underscores"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "각 단어의 공백이 밑줄로 바뀝니다"
-          }
-        }
-      }
-    },
     "Add #" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -541,23 +507,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "확인"
-          }
-        }
-      }
-    },
-    "Replace spaces with _" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Space to _"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "공백을 _로"
           }
         }
       }

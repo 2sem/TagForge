@@ -12,7 +12,6 @@ import SwiftData
 final class WordSetModel {
     var name: String = "" // 기본값 추가
     @Relationship(deleteRule: .cascade, inverse: \WordModel.wordSet) var words: [WordModel]? // ...existing code...
-    var replaceSpaces: Bool = false // 기본값 추가
     var attachSharp: Bool = false // 기본값 추가
     var generateCombinations: Bool = false // 기본값 추가
     var maxCombinationLength: Int = 2
@@ -20,14 +19,12 @@ final class WordSetModel {
     init(
         name: String = "",
         words: [WordModel] = [],
-        replaceSpaces: Bool = false,
         attachSharp: Bool = false,
         generateCombinations: Bool = false,
         maxCombinationLength: Int = 2
     ) { // 기본값 추가
         self.name = name
         self.words = words
-        self.replaceSpaces = replaceSpaces
         self.attachSharp = attachSharp
         self.generateCombinations = generateCombinations
         self.maxCombinationLength = maxCombinationLength
