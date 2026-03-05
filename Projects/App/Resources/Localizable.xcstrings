@@ -432,121 +432,104 @@
         }
       }
     },
-    "option.charlimit" : {
+    "accessibility.option.addHash" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Char Limit"
+            "value" : "Add hashtag prefix"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "글자 수 제한"
+            "value" : "해시태그 추가"
           }
         }
       }
     },
-    "output.counter.accessibility" : {
+    "accessibility.option.addHash.hint" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d of %d characters used"
+            "value" : "Each tag is prefixed with a hash symbol"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d / %d 자 사용됨"
+            "value" : "각 태그 앞에 # 기호가 붙습니다"
           }
         }
       }
     },
-    "paywall.body" : {
+    "accessibility.option.combinations" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Platform presets for paid accounts are coming soon."
+            "value" : "Generate combinations"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "유료 계정용 플랫폼 프리셋은 곧 출시될 예정입니다."
+            "value" : "조합 생성"
           }
         }
       }
     },
-    "paywall.dismiss" : {
+    "accessibility.option.combinations.hint" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Continue with Free"
+            "value" : "Generates all permutations of your words"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "무료로 계속"
+            "value" : "단어의 모든 조합을 생성합니다"
           }
         }
       }
     },
-    "paywall.title" : {
+    "accessibility.option.replaceSpaces" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unlock Extended Limits"
+            "value" : "Replace spaces with underscore"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "확장 제한 잠금 해제"
+            "value" : "공백을 밑줄로 교체"
           }
         }
       }
     },
-    "preset.custom" : {
+    "accessibility.option.replaceSpaces.hint" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "custom"
+            "value" : "Spaces in each word become underscores"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용자 정의"
-          }
-        }
-      }
-    },
-    "preset.locked.hint" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Double-tap to view upgrade options"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "업그레이드 옵션을 보려면 두 번 탭하세요"
+            "value" : "각 단어의 공백이 밑줄로 바뀝니다"
           }
         }
       }
