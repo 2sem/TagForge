@@ -2,7 +2,7 @@ import SwiftUI
 
 struct GeneratedTagsSheet: View {
     @ObservedObject var viewModel: MainViewModel;
-    @State private var removedIds: Set<UUID> = [];
+    @State private var removedIds: Swift.Set<UUID> = [];
 
     private var visibleTags: [GeneratedTag] {
         viewModel.generatedTagList.filter { !removedIds.contains($0.id) };
