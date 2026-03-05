@@ -235,17 +235,6 @@ private func TagChipListView() -> some View {
         VStack(spacing: 0) {
             FlowLayout(spacing: 8) {
                 OptionButton(
-                    isSelected: viewModel.currentWordSet.replaceSpaces,
-                    accessibilityLabel: NSLocalizedString("accessibility.option.replaceSpaces", comment: ""),
-                    accessibilityHint: NSLocalizedString("accessibility.option.replaceSpaces.hint", comment: "")
-                ) {
-                    Text("_")
-                        .font(.system(size: 17, design: .monospaced).weight(.semibold))
-                        .foregroundColor(viewModel.currentWordSet.replaceSpaces ? .white : Color(.label).opacity(0.6))
-                } action: {
-                    viewModel.currentWordSet.replaceSpaces.toggle();
-                }
-                OptionButton(
                     isSelected: viewModel.currentWordSet.attachSharp,
                     accessibilityLabel: NSLocalizedString("accessibility.option.addHash", comment: ""),
                     accessibilityHint: NSLocalizedString("accessibility.option.addHash.hint", comment: "")

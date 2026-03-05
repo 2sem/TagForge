@@ -58,7 +58,7 @@ class MainViewModel: ObservableObject {
             return
         }
         
-        let currentWordSet = self.storageManager.createWordSet(words: [], replaceSpaces: false, attachSharp: false, generateCombinations: false)
+        let currentWordSet = self.storageManager.createWordSet(words: [], attachSharp: false, generateCombinations: false)
         self.currentWordSet = currentWordSet
         wordSets.append(currentWordSet)
     }
@@ -141,16 +141,16 @@ class MainViewModel: ObservableObject {
     }
     
     func createNewSet(name: String) {
-        currentWordSet = self.storageManager.createWordSet(name: name, words: [], replaceSpaces: false, attachSharp: false, generateCombinations: false)
+        currentWordSet = self.storageManager.createWordSet(name: name, words: [], attachSharp: false, generateCombinations: false)
         wordSets.append(currentWordSet)
         storageManager.save()
     }
     
     func generateTags() {
-        // 1. 옵션 적용 함수 (replaceSpaces만 적용)
+        // 1. 옵션 적용 함수 (hash mode에서는 자동으로 공백을 _로 변환)
         func applyOptions(to tag: String) -> String {
             var tag = tag;
-            if currentWordSet.replaceSpaces {
+            if currentWordSet.attachSharp {
                 tag = tag.replacingOccurrences(of: " ", with: "_");
             }
             return tag;
