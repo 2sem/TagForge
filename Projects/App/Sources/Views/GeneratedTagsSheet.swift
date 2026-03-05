@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct GeneratedTagsSheet: View {
     @ObservedObject var viewModel: MainViewModel;
@@ -67,7 +66,7 @@ struct GeneratedTagsSheet: View {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                             removedIds.removeAll();
                         }
-                        UINotificationFeedbackGenerator().notificationOccurred(.success);
+
                     } label: {
                         Text(String(format: NSLocalizedString("sheet.generatedTags.reset", comment: ""), removedCount))
                             .font(.subheadline)
@@ -112,7 +111,7 @@ struct GeneratedTagsSheet: View {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                     removedIds.insert(tag.id);
                 }
-                UIImpactFeedbackGenerator(style: .light).impactOccurred();
+
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 11, weight: .bold))
