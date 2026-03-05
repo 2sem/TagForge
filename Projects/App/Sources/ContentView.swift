@@ -88,6 +88,9 @@ struct ContentView: View {
         .sheet(isPresented: $showingWordSetPicker) {
             WordSetPickerView(viewModel: viewModel, isPresented: $showingWordSetPicker)
         }
+        .sheet(isPresented: $viewModel.showingTagSheet) {
+            GeneratedTagsSheet(viewModel: viewModel)
+        }
         .overlay(
             Group {
                 if showingCopiedAlert {
@@ -327,106 +330,6 @@ private func TagChipListView() -> some View {
             }
             .buttonStyle(PlainButtonStyle())
             .disabled(!canGenerate)
-            if !viewModel.generatedTags.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        Image(systemName: "tag.fill")
-                            .foregroundColor(.blue)
-                        Text("Generated Tags")
-                            .font(.system(size: 16, weight: .bold))
-                        Spacer()
-                        Button(action: {
-                            #if os(iOS)
-                            UIPasteboard.general.string = viewModel.generatedTags;
-                            #endif
-                            withAnimation {
-                                showingCopiedAlert = true;
-                            }
-                        }) {
-                            Image(systemName: "doc.on.doc")
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.blue)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .accessibilityLabel("Copy")
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.top, 12)
-                    .padding(.bottom, 4)
-                    // 코드박스 스타일
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        Text(viewModel.generatedTags)
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.secondary)
-                            .padding(12)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(10)
-                            .frame(minHeight: 44, alignment: .leading)
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.bottom, 8)
-                }
-                .background(Color.white)
-                .cornerRadius(16)
-                .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 2)
-                .padding(.top, 8)
-                .padding(.horizontal, 2)
-                .transition(.move(edge: .bottom).combined(with: .opacity)) // 슬라이드 인 애니메이션
-                .animation(.spring(), value: viewModel.generatedTags)
-                HStack(spacing: 20) {
-                    Button(action: {
-                        UIPasteboard.general.string = viewModel.generatedTags
-                        withAnimation {
-                            showingCopiedAlert = true
-                        }
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "doc.on.doc")
-                                .font(.system(size: 16, weight: .semibold))
-                            Text("Copy")
-                                .font(.system(size: 15, weight: .semibold))
-                        }
-                        .foregroundColor(.green)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color.green, lineWidth: 1.5)
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .accessibilityLabel("Copy")
-                    Button(action: {
-                        let activityVC = UIActivityViewController(activityItems: [viewModel.generatedTags], applicationActivities: nil)
-                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                           let window = windowScene.windows.first,
-                           let rootVC = window.rootViewController {
-                            activityVC.popoverPresentationController?.sourceView = rootVC.view
-                            rootVC.present(activityVC, animated: true)
-                        }
-                        withAnimation {
-                            showingCopiedAlert = true
-                        }
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.system(size: 16, weight: .semibold))
-                            Text("Share")
-                                .font(.system(size: 15, weight: .semibold))
-                        }
-                        .foregroundColor(.orange)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color.orange, lineWidth: 1.5)
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-                .padding(.top, 8)
-                .padding(.bottom, 4)
-            }
         }
         .padding(.vertical, 8)
     }

@@ -4,12 +4,23 @@ import OSLog
 
 private let logger = Logger(subsystem: "com.toyboy2.tagforge", category: "MainViewModel")
 
+struct GeneratedTag: Identifiable {
+    let id = UUID();
+    let text: String;
+}
+
 @MainActor
 class MainViewModel: ObservableObject {
     @Published var wordSets: [WordSetModel] = []
     @Published var currentWordSet: WordSetModel!
-    @Published var generatedTags: String = ""
+    @Published var generatedTagList: [GeneratedTag] = []
+    @Published var showingTagSheet: Bool = false
     @Published var isSyncing: Bool = true
+
+    var generatedTagsString: String {
+        let separator = currentWordSet.attachSharp ? " " : ", ";
+        return generatedTagList.map(\.text).joined(separator: separator);
+    }
     
     private let storageManager: WordSetManager
     private var cancellables = Swift.Set<AnyCancellable>()
@@ -159,9 +170,9 @@ class MainViewModel: ObservableObject {
                 tag.hasPrefix("#") ? tag : "#" + tag;
             };
         }
-        // 6. Join tags
-        let separator = currentWordSet.attachSharp ? " " : ", ";
-        generatedTags = tags.joined(separator: separator);
+        // 6. Populate tag list and present sheet
+        generatedTagList = tags.map { GeneratedTag(text: $0) };
+        showingTagSheet = true;
     }
 
     private func generateCombinations(of words: [String]) -> [String] {
