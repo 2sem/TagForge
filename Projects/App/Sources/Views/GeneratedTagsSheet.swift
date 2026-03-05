@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct GeneratedTagsSheet: View {
     @ObservedObject var viewModel: MainViewModel;
