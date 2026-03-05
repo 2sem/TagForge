@@ -837,13 +837,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "WordSet Selection"
+            "value" : "My Word Sets"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "단어 묶음 선택"
+            "value" : "내 단어 세트"
           }
         }
       }
