@@ -233,23 +233,35 @@ private func TagChipListView() -> some View {
             FlowLayout(spacing: 8) {
                 OptionButton(
                     isSelected: viewModel.currentWordSet.replaceSpaces,
-                    icon: "arrow.right.to.line",
-                    text: "Replace spaces with _"
+                    accessibilityLabel: NSLocalizedString("accessibility.option.replaceSpaces", comment: ""),
+                    accessibilityHint: NSLocalizedString("accessibility.option.replaceSpaces.hint", comment: "")
                 ) {
+                    Text("' '\u{2192}_")
+                        .font(.system(size: 14, design: .monospaced).weight(.regular))
+                        .foregroundColor(viewModel.currentWordSet.replaceSpaces ? .white : Color(.label).opacity(0.6))
+                } action: {
                     viewModel.currentWordSet.replaceSpaces.toggle();
                 }
                 OptionButton(
                     isSelected: viewModel.currentWordSet.attachSharp,
-                    icon: "number",
-                    text: "Add #"
+                    accessibilityLabel: NSLocalizedString("accessibility.option.addHash", comment: ""),
+                    accessibilityHint: NSLocalizedString("accessibility.option.addHash.hint", comment: "")
                 ) {
+                    Text("#")
+                        .font(.system(size: 17, design: .monospaced).weight(.semibold))
+                        .foregroundColor(viewModel.currentWordSet.attachSharp ? .white : Color(.label).opacity(0.6))
+                } action: {
                     viewModel.currentWordSet.attachSharp.toggle();
                 }
                 OptionButton(
                     isSelected: viewModel.currentWordSet.generateCombinations,
-                    icon: "square.stack.3d.up",
-                    text: "Combinations"
+                    accessibilityLabel: NSLocalizedString("accessibility.option.combinations", comment: ""),
+                    accessibilityHint: NSLocalizedString("accessibility.option.combinations.hint", comment: "")
                 ) {
+                    Text("a\u{00B7}b\u{00B7}c")
+                        .font(.system(size: 13, design: .monospaced).weight(.semibold))
+                        .foregroundColor(viewModel.currentWordSet.generateCombinations ? .white : Color(.label).opacity(0.6))
+                } action: {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                         viewModel.currentWordSet.generateCombinations.toggle();
                     }
@@ -257,9 +269,14 @@ private func TagChipListView() -> some View {
             }
             if viewModel.currentWordSet.generateCombinations {
                 HStack {
-                    Text(NSLocalizedString("combinations.max_length", comment: ""))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    HStack(spacing: 4) {
+                        Text("a\u{00B7}b")
+                            .font(.system(size: 13, design: .monospaced).weight(.semibold))
+                            .foregroundColor(.secondary)
+                        Text("\u{2264}")
+                            .font(.system(size: 13))
+                            .foregroundColor(.secondary)
+                    }
                     Spacer()
                     Stepper(
                         value: Binding(
@@ -469,30 +486,27 @@ private func TagChipListView() -> some View {
     }
 }
 
-struct OptionButton: View {
+struct OptionButton<Label: View>: View {
     let isSelected: Bool
-    let icon: String
-    let text: LocalizedStringKey
+    let accessibilityLabel: String
+    let accessibilityHint: String
+    @ViewBuilder let label: () -> Label
     let action: () -> Void
-    var isDisabled: Bool = false
+
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(isDisabled ? Color(.systemGray3) : (isSelected ? Color.white : Color.gray))
-                Text(text)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(isDisabled ? Color(.systemGray3) : (isSelected ? Color.white : Color.gray))
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(isDisabled ? Color(.systemGray5) : (isSelected ? Color.blue : Color(.systemGray5)))
-            .cornerRadius(16)
-            .shadow(color: isSelected && !isDisabled ? Color.blue.opacity(0.12) : .clear, radius: 2, x: 0, y: 1)
+            label()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .frame(minHeight: 44)
+                .background(isSelected ? Color.blue : Color(.systemGray5))
+                .cornerRadius(16)
         }
         .buttonStyle(PlainButtonStyle())
-        .disabled(isDisabled)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityHint(accessibilityHint)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityValue(isSelected ? "On" : "Off")
     }
 }
 
