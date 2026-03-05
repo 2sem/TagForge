@@ -236,8 +236,8 @@ private func TagChipListView() -> some View {
                     accessibilityLabel: NSLocalizedString("accessibility.option.replaceSpaces", comment: ""),
                     accessibilityHint: NSLocalizedString("accessibility.option.replaceSpaces.hint", comment: "")
                 ) {
-                    Text("' '\u{2192}_")
-                        .font(.system(size: 14, design: .monospaced).weight(.regular))
+                    Text("_")
+                        .font(.system(size: 17, design: .monospaced).weight(.semibold))
                         .foregroundColor(viewModel.currentWordSet.replaceSpaces ? .white : Color(.label).opacity(0.6))
                 } action: {
                     viewModel.currentWordSet.replaceSpaces.toggle();
@@ -269,14 +269,9 @@ private func TagChipListView() -> some View {
             }
             if viewModel.currentWordSet.generateCombinations {
                 HStack {
-                    HStack(spacing: 4) {
-                        Text("a\u{00B7}b")
-                            .font(.system(size: 13, design: .monospaced).weight(.semibold))
-                            .foregroundColor(.secondary)
-                        Text("\u{2264}")
-                            .font(.system(size: 13))
-                            .foregroundColor(.secondary)
-                    }
+                    Text(NSLocalizedString("combinations.max_length", comment: ""))
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                     Spacer()
                     Stepper(
                         value: Binding(

@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "' '→_" : {
+
+    },
     "'%@' is already in the list" : {
       "localizations" : {
         "en" : {
@@ -16,6 +19,9 @@
           }
         }
       }
+    },
+    "#" : {
+
     },
     "#%@" : {
 
@@ -59,6 +65,117 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 태그"
+          }
+        }
+      }
+    },
+    "≤" : {
+
+    },
+    "a·b" : {
+
+    },
+    "a·b·c" : {
+
+    },
+    "accessibility.option.addHash" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add hashtag prefix"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해시태그 추가"
+          }
+        }
+      }
+    },
+    "accessibility.option.addHash.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each tag is prefixed with a hash symbol"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "각 태그 앞에 # 기호가 붙습니다"
+          }
+        }
+      }
+    },
+    "accessibility.option.combinations" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generate combinations"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "조합 생성"
+          }
+        }
+      }
+    },
+    "accessibility.option.combinations.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generates all permutations of your words"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단어의 모든 조합을 생성합니다"
+          }
+        }
+      }
+    },
+    "accessibility.option.replaceSpaces" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replace spaces with underscore"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공백을 밑줄로 교체"
+          }
+        }
+      }
+    },
+    "accessibility.option.replaceSpaces.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spaces in each word become underscores"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "각 단어의 공백이 밑줄로 바뀝니다"
           }
         }
       }
@@ -187,7 +304,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Max words"
+            "value" : "Max Words"
           }
         },
         "ko" : {
@@ -428,108 +545,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "확인"
-          }
-        }
-      }
-    },
-    "accessibility.option.addHash" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add hashtag prefix"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "해시태그 추가"
-          }
-        }
-      }
-    },
-    "accessibility.option.addHash.hint" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Each tag is prefixed with a hash symbol"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "각 태그 앞에 # 기호가 붙습니다"
-          }
-        }
-      }
-    },
-    "accessibility.option.combinations" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generate combinations"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "조합 생성"
-          }
-        }
-      }
-    },
-    "accessibility.option.combinations.hint" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generates all permutations of your words"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "단어의 모든 조합을 생성합니다"
-          }
-        }
-      }
-    },
-    "accessibility.option.replaceSpaces" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Replace spaces with underscore"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "공백을 밑줄로 교체"
-          }
-        }
-      }
-    },
-    "accessibility.option.replaceSpaces.hint" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spaces in each word become underscores"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "각 단어의 공백이 밑줄로 바뀝니다"
           }
         }
       }
