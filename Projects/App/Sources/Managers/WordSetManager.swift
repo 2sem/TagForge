@@ -30,6 +30,7 @@ class WordSetManager {
         }
 
         NSPersistentCloudKitContainer.eventChangedPublisher
+            .filter { $0.endDate != nil }   // skip in-flight events
             .sink { event in
                 let type: String
                 switch event.type {
@@ -39,14 +40,14 @@ class WordSetManager {
                 @unknown default: type = "unknown"
                 }
 
-                let duration = event.endDate.map { String(format: "%.2fs", $0.timeIntervalSince(event.startDate)) } ?? "in progress"
+                let duration = String(format: "%.2fs", event.endDate!.timeIntervalSince(event.startDate))
 
                 if event.succeeded {
                     logger.info("[\(type)] succeeded — \(duration)")
                 } else if let error = event.error {
                     logger.error("[\(type)] failed — \(duration) — \(error)")
                 } else {
-                    logger.warning("[\(type)] ended without success — \(duration)")
+                    logger.warning("[\(type)] failed — \(duration)")
                 }
             }
             .store(in: &cancellables)
