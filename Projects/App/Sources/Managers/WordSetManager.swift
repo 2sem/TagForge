@@ -18,7 +18,7 @@ class WordSetManager {
     static let shared = WordSetManager()
     private let modelContainer: ModelContainer
     private let modelContext: ModelContext
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Swift.Set<AnyCancellable>()
 
     private init() {
         do {
@@ -39,9 +39,7 @@ class WordSetManager {
                 @unknown default: type = "unknown"
                 }
 
-                let duration = event.startDate.map { start in
-                    event.endDate.map { String(format: "%.2fs", $0.timeIntervalSince(start)) } ?? "in progress"
-                } ?? "—"
+                let duration = event.endDate.map { String(format: "%.2fs", $0.timeIntervalSince(event.startDate)) } ?? "in progress"
 
                 if event.succeeded {
                     logger.info("[\(type)] succeeded — \(duration)")
