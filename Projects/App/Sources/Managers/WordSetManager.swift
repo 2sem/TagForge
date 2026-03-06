@@ -34,17 +34,7 @@ class WordSetManager {
             .eraseToAnyPublisher()
     }
 
-    // NSManagedObjectContextDidSave Notification Publisher
-    var remoteChangePublisher: AnyPublisher<Notification, Never> {
-//        guard let nsContext = (modelContext as? NSObject)?.value(forKey: "context") as? NSManagedObjectContext else {
-//            // fallback: never emit
-//            return Empty().eraseToAnyPublisher()
-//        }
-        
-        return NotificationCenter.default
-            .publisher(for: NSNotification.Name.NSPersistentStoreRemoteChange)
-            .eraseToAnyPublisher()
-    }
+
     
     func loadWordSets() -> [WordSetModel] {
         (try? modelContext.fetch(FetchDescriptor<WordSetModel>())) ?? []

@@ -28,11 +28,7 @@ class MainViewModel: ObservableObject {
     init(storageManager: WordSetManager = .shared) {
         self.storageManager = storageManager
 
-        // Ongoing sync: reload when iCloud pushes changes after initial launch
-        storageManager.remoteChangePublisher
-            .combineLatest($isSyncing)
-            .filter { (_, isSyncing) in isSyncing }
-            .map { (notification, _) in notification }
+        storageManager.cloudKitImportEventPublisher
             .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -42,17 +38,7 @@ class MainViewModel: ObservableObject {
             .store(in: &cancellables)
 
         wordSets = storageManager.loadWordSets()
-
-        if wordSets.isEmpty {
-            storageManager.cloudKitImportEventPublisher
-                .first()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] _ in
-                    self?.loadWordSets()
-                    self?.isSyncing = false
-                }
-                .store(in: &cancellables)
-        } else {
+        if !wordSets.isEmpty {
             loadCurrentSet()
         }
     }
