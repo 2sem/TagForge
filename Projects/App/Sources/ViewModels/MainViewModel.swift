@@ -16,6 +16,7 @@ class MainViewModel: ObservableObject {
     @Published var generatedTagList: [GeneratedTag] = []
     @Published var showingTagSheet: Bool = false
     @Published var isSyncing: Bool = true
+    @Published var syncMessage: String = "Connecting to iCloud..."
 
     var generatedTagsString: String {
         let separator = currentWordSet.attachSharp ? " " : ", ";
@@ -27,6 +28,19 @@ class MainViewModel: ObservableObject {
     
     init(storageManager: WordSetManager = .shared) {
         self.storageManager = storageManager
+
+        NSPersistentCloudKitContainer.eventChangedPublisher
+            .filter { $0.endDate == nil }   // in-flight events only — update message as phases begin
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event.type {
+                case .setup:  self?.syncMessage = "Connecting to iCloud..."
+                case .import: self?.syncMessage = "Loading your data..."
+                case .export: self?.syncMessage = "Saving changes..."
+                @unknown default: break
+                }
+            }
+            .store(in: &cancellables)
 
         storageManager.cloudKitImportEventPublisher
             .debounce(for: .seconds(2), scheduler: DispatchQueue.main)

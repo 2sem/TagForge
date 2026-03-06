@@ -7,6 +7,7 @@ private let contentViewLogger = Logger(subsystem: "com.toyboy2.tagforge", catego
 
 struct ContentView: View {
     @Binding var isSyncing: Bool
+    @Binding var syncMessage: String
     @StateObject private var viewModel = MainViewModel()
     @State private var inputText: String = ""
     @FocusState private var isInputFocused: Bool
@@ -55,6 +56,9 @@ struct ContentView: View {
         .ignoresSafeArea(.keyboard)
         .onChange(of: viewModel.isSyncing) { newValue in
             isSyncing = newValue
+        }
+        .onChange(of: viewModel.syncMessage) { newValue in
+            syncMessage = newValue
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
             Button("OK", role: .cancel) { }
