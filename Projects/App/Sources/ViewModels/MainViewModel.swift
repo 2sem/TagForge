@@ -27,22 +27,20 @@ class MainViewModel: ObservableObject {
     
     init(storageManager: WordSetManager = .shared) {
         self.storageManager = storageManager
-        // NSManagedObjectContextDidSave Notification 구독
-        storageManager.remoteChangePublisher
-            .combineLatest($isSyncing)
-            .filter { (_, isSyncing) in isSyncing }
-            .map { (notification, _) in notification }
+
+        storageManager.cloudKitImportEventPublisher
             .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] (notification) in
-                print("WordSetManager.remomteChange. \(notification.userInfo)")
+            .sink { [weak self] _ in
                 self?.loadWordSets()
                 self?.isSyncing = false
             }
             .store(in: &cancellables)
-        
-        // 초기 데이터 로드
-        loadWordSets()
+
+        wordSets = storageManager.loadWordSets()
+        if !wordSets.isEmpty {
+            loadCurrentSet()
+        }
     }
     
     func loadWordSets() {

@@ -9,13 +9,17 @@ import Foundation
 import SwiftData
 import Combine
 import CoreData
+import OSLog
+
+private let logger = Logger(subsystem: "com.toyboy2.tagforge", category: "iCloudSync")
 
 @MainActor
 class WordSetManager {
     static let shared = WordSetManager()
     private let modelContainer: ModelContainer
     private let modelContext: ModelContext
-    
+    private var cancellables = Swift.Set<AnyCancellable>()
+
     private init() {
         do {
             let config: ModelConfiguration = ModelConfiguration(cloudKitDatabase: .private("iCloud.com.toyboy2.tagforge"))
@@ -24,19 +28,40 @@ class WordSetManager {
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")
         }
+
+        NSPersistentCloudKitContainer.eventChangedPublisher
+            .filter { $0.endDate != nil }   // skip in-flight events
+            .sink { event in
+                let type: String
+                switch event.type {
+                case .setup:  type = "setup"
+                case .import: type = "import"
+                case .export: type = "export"
+                @unknown default: type = "unknown"
+                }
+
+                let duration = String(format: "%.2fs", event.endDate!.timeIntervalSince(event.startDate))
+
+                if event.succeeded {
+                    logger.info("[\(type)] succeeded — \(duration)")
+                } else if let error = event.error {
+                    logger.error("[\(type)] failed — \(duration) — \(error)")
+                } else {
+                    logger.warning("[\(type)] failed — \(duration)")
+                }
+            }
+            .store(in: &cancellables)
     }
     
-    // NSManagedObjectContextDidSave Notification Publisher
-    var remoteChangePublisher: AnyPublisher<Notification, Never> {
-//        guard let nsContext = (modelContext as? NSObject)?.value(forKey: "context") as? NSManagedObjectContext else {
-//            // fallback: never emit
-//            return Empty().eraseToAnyPublisher()
-//        }
-        
-        return NotificationCenter.default
-            .publisher(for: NSNotification.Name.NSPersistentStoreRemoteChange)
+    // CloudKit import event publisher — fires when the initial iCloud import finishes
+    // (regardless of whether data was found), which is the earliest safe moment to create defaults.
+    var cloudKitImportEventPublisher: AnyPublisher<NSPersistentCloudKitContainer.Event, Never> {
+        NSPersistentCloudKitContainer.eventChangedPublisher
+            .filter { $0.type == .import && $0.endDate != nil }
             .eraseToAnyPublisher()
     }
+
+
     
     func loadWordSets() -> [WordSetModel] {
         (try? modelContext.fetch(FetchDescriptor<WordSetModel>())) ?? []
