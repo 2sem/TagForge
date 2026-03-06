@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import CoreData
 import OSLog
 
 private let logger = Logger(subsystem: "com.toyboy2.tagforge", category: "MainViewModel")
