@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import CoreData
 import OSLog
 
 private let logger = Logger(subsystem: "com.toyboy2.tagforge", category: "MainViewModel")
@@ -16,6 +17,7 @@ class MainViewModel: ObservableObject {
     @Published var generatedTagList: [GeneratedTag] = []
     @Published var showingTagSheet: Bool = false
     @Published var isSyncing: Bool = true
+    @Published var syncMessage: String = NSLocalizedString("sync.message.connecting", comment: "")
 
     var generatedTagsString: String {
         let separator = currentWordSet.attachSharp ? " " : ", ";
@@ -24,9 +26,21 @@ class MainViewModel: ObservableObject {
     
     private let storageManager: WordSetManager
     private var cancellables = Swift.Set<AnyCancellable>()
-    
     init(storageManager: WordSetManager = .shared) {
         self.storageManager = storageManager
+
+        NSPersistentCloudKitContainer.eventChangedPublisher
+            .filter { $0.endDate == nil }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event.type {
+                case .setup:  self?.syncMessage = NSLocalizedString("sync.message.connecting", comment: "")
+                case .import: self?.syncMessage = NSLocalizedString("sync.message.loading", comment: "")
+                case .export: self?.syncMessage = NSLocalizedString("sync.message.saving", comment: "")
+                @unknown default: break
+                }
+            }
+            .store(in: &cancellables)
 
         storageManager.cloudKitImportEventPublisher
             .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
@@ -42,7 +56,7 @@ class MainViewModel: ObservableObject {
             loadCurrentSet()
         }
     }
-    
+
     func loadWordSets() {
         wordSets = WordSetManager.shared.loadWordSets()
         

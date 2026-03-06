@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SplashScreenView: View {
+    var syncMessage: String = ""
     @State private var logoScale: CGFloat = 0.5
     @State private var logoOpacity: Double = 0.0
     @State private var textOpacity: Double = 0.0
@@ -69,6 +70,20 @@ struct SplashScreenView: View {
                         .foregroundColor(.white.opacity(0.9))
                         .opacity(textOpacity)
                         .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+
+                    // iCloud sync status
+                    if !syncMessage.isEmpty {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                                .tint(.white.opacity(0.7))
+                                .scaleEffect(0.8)
+                            Text(syncMessage)
+                                .font(.system(size: 14, weight: .regular, design: .rounded))
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                        .opacity(textOpacity)
+                        .transition(.opacity)
+                    }
                 }
             }
         }
@@ -108,5 +123,5 @@ struct SplashScreenView: View {
 }
 
 #Preview {
-    SplashScreenView()
+    SplashScreenView(syncMessage: "Connecting to iCloud...")
 } 
