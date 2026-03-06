@@ -9,13 +9,17 @@ import Foundation
 import SwiftData
 import Combine
 import CoreData
+import OSLog
+
+private let logger = Logger(subsystem: "com.toyboy2.tagforge", category: "iCloudSync")
 
 @MainActor
 class WordSetManager {
     static let shared = WordSetManager()
     private let modelContainer: ModelContainer
     private let modelContext: ModelContext
-    
+    private var cancellables = Set<AnyCancellable>()
+
     private init() {
         do {
             let config: ModelConfiguration = ModelConfiguration(cloudKitDatabase: .private("iCloud.com.toyboy2.tagforge"))
@@ -24,6 +28,30 @@ class WordSetManager {
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")
         }
+
+        NSPersistentCloudKitContainer.eventChangedPublisher
+            .sink { event in
+                let type: String
+                switch event.type {
+                case .setup:  type = "setup"
+                case .import: type = "import"
+                case .export: type = "export"
+                @unknown default: type = "unknown"
+                }
+
+                let duration = event.startDate.map { start in
+                    event.endDate.map { String(format: "%.2fs", $0.timeIntervalSince(start)) } ?? "in progress"
+                } ?? "—"
+
+                if event.succeeded {
+                    logger.info("[\(type)] succeeded — \(duration)")
+                } else if let error = event.error {
+                    logger.error("[\(type)] failed — \(duration) — \(error)")
+                } else {
+                    logger.warning("[\(type)] ended without success — \(duration)")
+                }
+            }
+            .store(in: &cancellables)
     }
     
     // CloudKit import event publisher — fires when the initial iCloud import finishes
