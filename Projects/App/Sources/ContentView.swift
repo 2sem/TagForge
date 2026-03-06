@@ -403,6 +403,6 @@ struct OptionButton<Label: View>: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(isSyncing: .constant(false))
+        ContentView(isSyncing: .constant(false), syncMessage: .constant(""))
     }
 }
