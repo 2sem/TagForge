@@ -1,5 +1,6 @@
 import SwiftUI
 
+@main
 struct TagForgeApp: App {
     @AppStorage("isDarkMode") private var isDarkMode = false
     @State private var isSyncing = true
