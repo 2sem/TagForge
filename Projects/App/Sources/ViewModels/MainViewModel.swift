@@ -16,7 +16,7 @@ class MainViewModel: ObservableObject {
     @Published var generatedTagList: [GeneratedTag] = []
     @Published var showingTagSheet: Bool = false
     @Published var isSyncing: Bool = true
-    @Published var syncMessage: String = "Connecting to iCloud..."
+    @Published var syncMessage: String = NSLocalizedString("sync.message.connecting", comment: "")
 
     var generatedTagsString: String {
         let separator = currentWordSet.attachSharp ? " " : ", ";
@@ -25,24 +25,36 @@ class MainViewModel: ObservableObject {
     
     private let storageManager: WordSetManager
     private var cancellables = Swift.Set<AnyCancellable>()
-    
     init(storageManager: WordSetManager = .shared) {
         self.storageManager = storageManager
 
         NSPersistentCloudKitContainer.eventChangedPublisher
-            .filter { $0.endDate == nil }   // in-flight events only — update message as phases begin
+            .filter { $0.endDate == nil }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event.type {
-                case .setup:  self?.syncMessage = "Connecting to iCloud..."
-                case .import: self?.syncMessage = "Loading your data..."
-                case .export: self?.syncMessage = "Saving changes..."
+                case .setup:  self?.syncMessage = NSLocalizedString("sync.message.connecting", comment: "")
+                case .import: self?.syncMessage = NSLocalizedString("sync.message.loading", comment: "")
+                case .export: self?.syncMessage = NSLocalizedString("sync.message.saving", comment: "")
                 @unknown default: break
                 }
             }
             .store(in: &cancellables)
 
         storageManager.cloudKitImportEventPublisher
+            .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.loadWordSets()
+                self?.isSyncing = false
+            }
+            .store(in: &cancellables)
+
+        wordSets = storageManager.loadWordSets()
+        if !wordSets.isEmpty {
+            loadCurrentSet()
+        }
+    }    storageManager.cloudKitImportEventPublisher
             .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
