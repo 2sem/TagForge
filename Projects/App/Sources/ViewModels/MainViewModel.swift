@@ -54,21 +54,8 @@ class MainViewModel: ObservableObject {
         if !wordSets.isEmpty {
             loadCurrentSet()
         }
-    }    storageManager.cloudKitImportEventPublisher
-            .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.loadWordSets()
-                self?.isSyncing = false
-            }
-            .store(in: &cancellables)
-
-        wordSets = storageManager.loadWordSets()
-        if !wordSets.isEmpty {
-            loadCurrentSet()
-        }
     }
-    
+
     func loadWordSets() {
         wordSets = WordSetManager.shared.loadWordSets()
         
