@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "_" : {
-
-    },
     "'%@' is already in the list" : {
       "localizations" : {
         "en" : {
@@ -579,6 +576,23 @@
         }
       }
     },
+    "sheet.generatedTags.copied" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copied!"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복사됨!"
+          }
+        }
+      }
+    },
     "sheet.generatedTags.copy" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -660,23 +674,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "초기화 (%d개 제거됨)"
-          }
-        }
-      }
-    },
-    "sheet.generatedTags.copied" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copied!"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복사됨!"
           }
         }
       }

@@ -23,6 +23,8 @@ let project = Project(
             deploymentTargets: .iOS("18.0"),
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "TagForge",
+                "CFBundleShortVersionString": "$(MARKETING_VERSION)",
+                "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
                 "UILaunchStoryboardName": "LaunchScreen",
                 "UIBackgroundModes": ["remote-notification"],
                 "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
