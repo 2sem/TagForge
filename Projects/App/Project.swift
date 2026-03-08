@@ -4,8 +4,8 @@ import ProjectDescriptionHelpers
 let project = Project(
     name: .projects.app,
     packages: [
-        .remote(url: "https://github.com/firebase/firebase-ios-sdk.git", requirement: .upToNextMajor(from: "10.0.0")),
-        .remote(url: "https://github.com/Alamofire/Alamofire.git", requirement: .upToNextMajor(from: "5.8.1"))
+        .package(id: "firebase.firebase-ios-sdk", from: "10.0.0"),
+        .package(id: "alamofire.alamofire", from: "5.8.1")
     ],
     settings: .settings(
         base: [:],
