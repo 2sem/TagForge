@@ -2,7 +2,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let dynamicPackages: [Package] = [
-    .remote(url: "https://github.com/firebase/firebase-ios-sdk.git", requirement: .upToNextMajor(from: "10.0.0")),
+    .package(id: "firebase.firebase-ios-sdk", from: "10.0.0"),
 ]
 
 let project = Project.makeModule(
