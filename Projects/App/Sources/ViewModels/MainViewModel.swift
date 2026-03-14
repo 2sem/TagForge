@@ -59,22 +59,34 @@ class MainViewModel: ObservableObject {
 
     func loadWordSets() {
         wordSets = WordSetManager.shared.loadWordSets()
-        
+
         createDefaultWordSetIfNeeded()
-        
-        loadCurrentSet()
+
+        preserveOrLoadCurrentSet()
     }
-    
+
     func createDefaultWordSetIfNeeded() {
         guard wordSets.isEmpty else {
             return
         }
-        
-        let currentWordSet = self.storageManager.createWordSet(words: [], attachSharp: false, generateCombinations: false)
-        self.currentWordSet = currentWordSet
-        wordSets.append(currentWordSet)
+
+        let newSet = self.storageManager.createWordSet(words: [], attachSharp: false, generateCombinations: false)
+        self.currentWordSet = newSet
+        wordSets.append(newSet)
     }
-    
+
+    /// After a reload, keep the previously selected word set when it still exists in the
+    /// refreshed list (matched by `PersistentIdentifier`). Only fall back to the first
+    /// item when the prior selection has been deleted or was never set.
+    private func preserveOrLoadCurrentSet() {
+        if let previousID = currentWordSet?.persistentModelID,
+           let preserved = wordSets.first(where: { $0.persistentModelID == previousID }) {
+            currentWordSet = preserved;
+        } else {
+            currentWordSet = wordSets.first;
+        }
+    }
+
     private func loadCurrentSet() {
         currentWordSet = wordSets.first;
     }
