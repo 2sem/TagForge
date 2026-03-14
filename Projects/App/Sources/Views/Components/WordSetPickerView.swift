@@ -55,7 +55,7 @@ struct WordSetPickerView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(wordSet.name.isEmpty ? "Default" : wordSet.name)
                 .font(.system(size: 16, weight: .medium))
-            Text("\(wordSet.words?.count ?? 0) words")
+            Text(String(format: NSLocalizedString("%lld words", comment: "Word count in word set row"), wordSet.words?.count ?? 0))
                 .font(.system(size: 14))
                 .foregroundColor(.secondary)
         }

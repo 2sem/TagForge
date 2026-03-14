@@ -66,6 +66,23 @@
         }
       }
     },
+    "%lld words" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld words"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 단어"
+          }
+        }
+      }
+    },
     "a·b·c" : {
 
     },
