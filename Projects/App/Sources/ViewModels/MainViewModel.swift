@@ -2,8 +2,10 @@ import Foundation
 import Combine
 import CoreData
 import OSLog
+import SwiftData
 
 private let logger = Logger(subsystem: "com.toyboy2.tagforge", category: "MainViewModel")
+private let selectedWordSetIDKey = "selectedWordSetID"
 
 struct GeneratedTag: Identifiable {
     let id = UUID();
@@ -13,7 +15,11 @@ struct GeneratedTag: Identifiable {
 @MainActor
 class MainViewModel: ObservableObject {
     @Published var wordSets: [WordSetModel] = []
-    @Published var currentWordSet: WordSetModel!
+    @Published var currentWordSet: WordSetModel! {
+        didSet {
+            saveCurrentSetID();
+        }
+    }
     @Published var generatedTagList: [GeneratedTag] = []
     @Published var showingTagSheet: Bool = false
     @Published var isSyncing: Bool = true
@@ -53,7 +59,7 @@ class MainViewModel: ObservableObject {
 
         wordSets = storageManager.loadWordSets()
         if !wordSets.isEmpty {
-            loadCurrentSet()
+            preserveOrLoadCurrentSet()
         }
     }
 
@@ -76,19 +82,42 @@ class MainViewModel: ObservableObject {
     }
 
     /// After a reload, keep the previously selected word set when it still exists in the
-    /// refreshed list (matched by `PersistentIdentifier`). Only fall back to the first
-    /// item when the prior selection has been deleted or was never set.
+    /// refreshed list (matched by `PersistentIdentifier`). Falls back to the UserDefaults-
+    /// persisted ID, then to the first available word set when no prior selection is found.
     private func preserveOrLoadCurrentSet() {
+        // 1. In-memory selection takes priority (already set this session).
         if let previousID = currentWordSet?.persistentModelID,
            let preserved = wordSets.first(where: { $0.persistentModelID == previousID }) {
             currentWordSet = preserved;
-        } else {
-            currentWordSet = wordSets.first;
+            return;
         }
+
+        // 2. Try restoring from UserDefaults (survives cold launch / reinstall-after-backup).
+        if let data = UserDefaults.standard.data(forKey: selectedWordSetIDKey),
+           let storedID = try? JSONDecoder().decode(PersistentIdentifier.self, from: data),
+           let matched = wordSets.first(where: { $0.persistentModelID == storedID }) {
+            logger.info("preserveOrLoadCurrentSet: restored selection from UserDefaults");
+            currentWordSet = matched;
+            return;
+        }
+
+        // 3. Nothing persisted — fall back to the first word set.
+        currentWordSet = wordSets.first;
     }
 
-    private func loadCurrentSet() {
-        currentWordSet = wordSets.first;
+    /// Encodes the current word set's `PersistentIdentifier` and writes it to `UserDefaults`.
+    /// Called automatically via `didSet` on `currentWordSet`.
+    private func saveCurrentSetID() {
+        guard let id = currentWordSet?.persistentModelID else {
+            UserDefaults.standard.removeObject(forKey: selectedWordSetIDKey);
+            return;
+        }
+        do {
+            let data = try JSONEncoder().encode(id);
+            UserDefaults.standard.set(data, forKey: selectedWordSetIDKey);
+        } catch {
+            logger.error("saveCurrentSetID: failed to encode PersistentIdentifier — \(error)");
+        }
     }
 
     func loadWord(set: WordSetModel) {
