@@ -55,7 +55,7 @@ struct WordSetPickerView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(wordSet.name.isEmpty ? "Default" : wordSet.name)
                 .font(.system(size: 16, weight: .medium))
-            Text("\(wordSet.words?.count ?? 0) tags")
+            Text("\(wordSet.words?.count ?? 0) words")
                 .font(.system(size: 14))
                 .foregroundColor(.secondary)
         }
