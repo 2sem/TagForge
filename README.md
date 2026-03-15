@@ -79,6 +79,7 @@ Trigger a deploy manually from **Actions → DEPLOY IOS**:
 | `APPLE_TEAM_ID` | Secret |
 | `IOS_KEYCHAIN` | Secret |
 | `IOS_KEYCHAIN_PWD` | Secret |
+| `PROFILE_NAME` | Secret |
 
 ## License
 
