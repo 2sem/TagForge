@@ -27,7 +27,8 @@ let project = Project(
                 "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
                 "UILaunchStoryboardName": "LaunchScreen",
                 "UIBackgroundModes": ["remote-notification"],
-                "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
+                "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+                "ITSAppUsesNonExemptEncryption": false
             ]),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
