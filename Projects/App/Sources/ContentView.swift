@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import UIKit
 import OSLog
 
 private let contentViewLogger = Logger(subsystem: "com.toyboy2.tagforge", category: "ContentView")
@@ -13,7 +12,6 @@ struct ContentView: View {
     @FocusState private var isInputFocused: Bool
     @State private var showingSetNameDialog = false
     @State private var showingDuplicateAlert = false
-    @State private var showingCopiedAlert = false
     @State private var newSetName: String = ""
     @State private var duplicateWord: String = ""
     @State private var clipboardWords: [String] = []
@@ -95,28 +93,6 @@ struct ContentView: View {
         .sheet(isPresented: $viewModel.showingTagSheet) {
             GeneratedTagsSheet(viewModel: viewModel)
         }
-        .overlay(
-            Group {
-                if showingCopiedAlert {
-                    VStack {
-                        Spacer()
-                        Text("Copied!")
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 12)
-                            .background(Color.black.opacity(0.8))
-                            .cornerRadius(12)
-                            .padding(.bottom, 40)
-                            .transition(.move(edge: .bottom))
-                            .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    showingCopiedAlert = false
-                                }
-                            }
-                    }
-                }
-            }
-        )
     }
 
     private func HeaderView() -> some View {
