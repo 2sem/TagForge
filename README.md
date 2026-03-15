@@ -82,4 +82,4 @@ Trigger a deploy manually from **Actions → DEPLOY IOS**:
 
 ## License
 
-Copyright © 2025 toyboy2. All rights reserved.
+Copyright © 2025 Lee Young-jun. All rights reserved.
