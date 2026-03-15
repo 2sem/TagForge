@@ -13,7 +13,7 @@ platform :ios do
     @team_id = ENV["APPLE_TEAM_ID"]
     @api_key_path = ENV["IOS_KEY_PATH"]
     @xcodeproj = "./Projects/#{@project_name}/#{@project_name}.xcodeproj"
-    @profile_name = @workspace_name
+    @profile_name = ENV["PROFILE_NAME"]
     @ipa_path = ENV["IOS_IPA_PATH"]
 
     puts "프로젝트: #{@project_name}"

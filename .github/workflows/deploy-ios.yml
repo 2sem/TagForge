@@ -23,6 +23,7 @@ jobs:
     env:
       PRODUCT_NAME: ${{ vars.PRODUCT_NAME }}
       PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
+      PROFILE_NAME: ${{ secrets.PROFILE_NAME }}
       IOS_CERT_PATH: 'cert.p12'
       IOS_PROFILE_PATH: 'profile.mobileprovision'
       IOS_KEY_PATH: 'api-key.json'
@@ -97,7 +98,7 @@ jobs:
             <key>provisioningProfiles</key>
             <dict>
               <key>$PACKAGE_NAME</key>
-              <string>$PRODUCT_NAME</string>
+              <string>$PROFILE_NAME</string>
             </dict>
             <key>signingStyle</key>
             <string>manual</string>
