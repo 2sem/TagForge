@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import Combine
 import CoreData
+import CloudKit
 import OSLog
 
 private let logger = Logger(subsystem: "com.toyboy2.tagforge", category: "iCloudSync")
@@ -58,6 +59,33 @@ class WordSetManager {
     var cloudKitImportEventPublisher: AnyPublisher<NSPersistentCloudKitContainer.Event, Never> {
         NSPersistentCloudKitContainer.eventChangedPublisher
             .filter { $0.type == .import && $0.endDate != nil }
+            .eraseToAnyPublisher()
+    }
+
+    /// Races three signals and completes on whichever fires first:
+    /// 1. A completed CloudKit import event (happy path).
+    /// 2. An immediate resolve when iCloud is unavailable (no account, restricted, etc.).
+    /// 3. A 15-second safety timeout (network issues, unexpected stalls).
+    /// This ensures the splash screen is never stuck indefinitely.
+    var syncReadyPublisher: AnyPublisher<Void, Never> {
+        let importReady = cloudKitImportEventPublisher
+            .map { _ in () }
+            .eraseToAnyPublisher()
+
+        let accountUnavailable = Future<Void, Never> { promise in
+            CKContainer.default().accountStatus { status, _ in
+                if status != .available {
+                    promise(.success(()))
+                }
+            }
+        }.eraseToAnyPublisher()
+
+        let timeout = Just(())
+            .delay(for: .seconds(15), scheduler: DispatchQueue.main)
+            .eraseToAnyPublisher()
+
+        return Publishers.Merge3(importReady, accountUnavailable, timeout)
+            .first()
             .eraseToAnyPublisher()
     }
 
