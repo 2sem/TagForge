@@ -1,4 +1,1 @@
-- Word set selection is now saved per device
-- Fixed: Splash screen could loop forever with no iCloud account
-- Fixed: "Copied!" toast appeared after sharing
-- Fixed: Word set row showed wrong count label
+-
