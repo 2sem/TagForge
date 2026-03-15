@@ -1,0 +1,137 @@
+name: DEPLOY IOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      isReleasing:
+        description: '심사제출'
+        type: boolean
+        required: true
+        default: true
+      body:
+        description: 'TestFlight 변경사항'
+        required: false
+        default: '수정사항'
+
+concurrency:
+  group: ${{ github.ref }}/ios/deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: macos-26
+    env:
+      PRODUCT_NAME: ${{ vars.PRODUCT_NAME }}
+      PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
+      IOS_CERT_PATH: 'cert.p12'
+      IOS_PROFILE_PATH: 'profile.mobileprovision'
+      IOS_KEY_PATH: 'api-key.json'
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.1.1.app
+
+      - name: Install Mise
+        uses: jdx/mise-action@v2
+
+      - name: Install Dependencies
+        run: |
+          tuist install
+
+      - name: Generate Xcode Project
+        run: |
+          tuist generate --no-open
+
+      - name: Import signing certificate
+        env:
+          IOS_CERT_BASE64: ${{ env.IOS_CERT_PATH }}.base64
+        run: |
+          echo "${{ secrets.IOS_CERT_P12_DATA }}" > $IOS_CERT_BASE64
+          base64 --decode -i $IOS_CERT_BASE64 -o ${{ env.IOS_CERT_PATH }}
+
+      - name: Import provisioning profile
+        env:
+          IOS_PROFILE_BASE64: ${{ env.IOS_PROFILE_PATH }}.base64
+        run: |
+          echo "${{ secrets.IOS_PROFILE_DATA }}" > $IOS_PROFILE_BASE64
+          base64 --decode -i $IOS_PROFILE_BASE64 -o ${{ env.IOS_PROFILE_PATH }}
+
+      - name: Export App Store Connect API key
+        env:
+          IOS_KEY_BASE64: ${{ env.IOS_KEY_PATH }}.base64
+        run: |
+          echo '${{ secrets.IOS_API_KEY }}' > $IOS_KEY_BASE64
+          base64 --decode -i $IOS_KEY_BASE64 -o ${{ env.IOS_KEY_PATH }}
+          rm $IOS_KEY_BASE64
+
+      - name: Upgrade fastlane
+        run: |
+          sudo gem install fastlane
+
+      - name: Setup certificates and increment build number
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          IOS_CERT_PWD: ${{ secrets.IOS_CERT_P12_PWD }}
+          IOS_KEYCHAIN: ${{ secrets.IOS_KEYCHAIN }}
+          IOS_KEYCHAIN_PWD: ${{ secrets.IOS_KEYCHAIN_PWD }}
+        run: |
+          fastlane ios setup
+
+      - name: Create export options plist
+        env:
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          cat > ./exportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>$TEAM_ID</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>$PACKAGE_NAME</key>
+              <string>$PRODUCT_NAME</string>
+            </dict>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Build and archive
+        env:
+          SCHEME: App
+          ARCHIVE_PATH: ./Output/Archive
+        run: |
+          WORKSPACE=${PRODUCT_NAME}.xcworkspace
+          tuist xcodebuild archive \
+            -workspace $WORKSPACE \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -archivePath "$ARCHIVE_PATH"
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath ./Output/Archive.xcarchive \
+            -exportPath ./Output/IPA \
+            -exportOptionsPlist ./exportOptions.plist
+
+      - name: Upload to TestFlight / App Store
+        env:
+          IOS_IPA_PATH: ./Output/IPA/App.ipa
+        run: |
+          fastlane ios upload \
+            description:'${{ github.event.inputs.body }}' \
+            isReleasing:${{ github.event.inputs.isReleasing }}
