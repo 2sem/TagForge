@@ -103,7 +103,7 @@ platform :ios do
         submit_for_review: true,
         force: true,
         skip_screenshots: true,
-        precheck_include_in_app_purchases: false,
+        run_precheck_before_submit: false,
       )
       puts "심사 제출 완료"
     else
