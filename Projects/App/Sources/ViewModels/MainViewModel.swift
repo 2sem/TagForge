@@ -48,8 +48,7 @@ class MainViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        storageManager.cloudKitImportEventPublisher
-            .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
+        storageManager.syncReadyPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.loadWordSets()
