@@ -151,6 +151,40 @@
         }
       }
     },
+    "accessibility.option.typo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include typo variants"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형 포함"
+          }
+        }
+      }
+    },
+    "accessibility.option.typo.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows typo configuration options"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 설정 옵션을 표시합니다"
+          }
+        }
+      }
+    },
     "Add #" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -839,6 +873,329 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "태그를 만들어보세요"
+          }
+        }
+      }
+    },
+    "options.typoVariants.footnote" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creates a small set of likely variants. Keep usage selective to avoid spammy output."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "적은 수의 오타 변형만 만듭니다. 과도한 사용은 피하세요."
+          }
+        }
+      }
+    },
+    "options.typoVariants.helper.off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optionally generate likely typo-style variations."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 형태의 가능성 있는 변형을 선택적으로 생성합니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.helper.on" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adds a limited set of typo variants to broaden tag coverage."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "태그 범위를 넓히기 위해 제한된 오타 변형을 추가합니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.helper.low" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creates a conservative set of likely typo variants."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가능성이 높은 오타 변형을 소수만 생성합니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.helper.medium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adds a wider set of typo variants while keeping results balanced."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형 범위를 조금 더 넓혀 더 다양하게 만들어줍니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.intensity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Variant intensity"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "변형 강도"
+          }
+        }
+      }
+    },
+    "options.typoVariants.low" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "낮음"
+          }
+        }
+      }
+    },
+    "options.typoVariants.medium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medium"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중간"
+          }
+        }
+      }
+    },
+    "options.typoVariants.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typo Variants"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형"
+          }
+        }
+      }
+    },
+    "options.typoVariants.toggle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include typo variants"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형 포함"
+          }
+        }
+      }
+    },
+    "options.typoVariants.warning.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Too many typo variants can reduce clarity and make tags feel spammy."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형이 너무 많으면 명확성이 떨어지고 태그가 스팸처럼 보일 수 있습니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.warning.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use sparingly"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신중하게 사용하세요"
+          }
+        }
+      }
+    },
+    "options.chip.typo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typo"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타"
+          }
+        }
+      }
+    },
+    "options.typoVariants.description.low" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creates a conservative set of likely typo variants."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가능성이 높은 오타 변형을 소수만 생성합니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.description.medium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adds a wider set of typo variants while keeping results balanced."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형 범위를 조금 더 넓혀 더 다양하게 만들어줍니다."
+          }
+        }
+      }
+    },
+    "options.detail.maxWords" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max words"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대 단어 수"
+          }
+        }
+      }
+    },
+    "options.detail.typoLevel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typo level"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 강도"
+          }
+        }
+      }
+    },
+    "options.section.combination" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combination"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "조합"
+          }
+        }
+      }
+    },
+    "options.section.typo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typo"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타"
           }
         }
       }

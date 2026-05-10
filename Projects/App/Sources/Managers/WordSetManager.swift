@@ -95,10 +95,19 @@ class WordSetManager {
         (try? modelContext.fetch(FetchDescriptor<WordSetModel>())) ?? []
     }
     
-    func createWordSet(name: String = "Default", words: [String], attachSharp: Bool, generateCombinations: Bool) -> WordSetModel {
+    func createWordSet(
+        name: String = "Default",
+        words: [String],
+        attachSharp: Bool,
+        generateCombinations: Bool,
+        includeTypoVariants: Bool = false,
+        typoVariantIntensity: TypoVariantIntensity = .low
+    ) -> WordSetModel {
         let newSet = WordSetModel(name: name, words: words.map{ WordModel(text: $0) },
                                 attachSharp: attachSharp,
-                                generateCombinations: generateCombinations)
+                                generateCombinations: generateCombinations,
+                                includeTypoVariants: includeTypoVariants,
+                                typoVariantIntensity: typoVariantIntensity)
         modelContext.insert(newSet)
         
         try? modelContext.save()

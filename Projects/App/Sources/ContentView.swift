@@ -212,7 +212,7 @@ private func TagChipListView() -> some View {
 }
 
     private func OptionsView() -> some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 10) {
             FlowLayout(spacing: 8) {
                 OptionButton(
                     isSelected: viewModel.currentWordSet.attachSharp,
@@ -238,27 +238,94 @@ private func TagChipListView() -> some View {
                         viewModel.currentWordSet.generateCombinations.toggle();
                     }
                 }
-            }
-            if viewModel.currentWordSet.generateCombinations {
-                HStack {
-                    Text(NSLocalizedString("combinations.max_length", comment: ""))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Stepper(
-                        value: Binding(
-                            get: { viewModel.currentWordSet.maxCombinationLength },
-                            set: { viewModel.currentWordSet.maxCombinationLength = $0 }
-                        ),
-                        in: 2...10,
-                        step: 1
-                    ) {
-                        Text("\(viewModel.currentWordSet.maxCombinationLength)")
-                            .font(.subheadline.monospacedDigit())
-                            .frame(minWidth: 20, alignment: .trailing)
+                OptionButton(
+                    isSelected: viewModel.currentWordSet.includeTypoVariants,
+                    accessibilityLabel: NSLocalizedString("accessibility.option.typo", comment: ""),
+                    accessibilityHint: NSLocalizedString("accessibility.option.typo.hint", comment: "")
+                ) {
+                    Text(NSLocalizedString("options.chip.typo", comment: ""))
+                        .font(.system(size: 13, design: .rounded).weight(.semibold))
+                        .foregroundColor(viewModel.currentWordSet.includeTypoVariants ? .white : Color(.label).opacity(0.65))
+                } action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        viewModel.currentWordSet.includeTypoVariants.toggle()
                     }
                 }
-                .padding(.horizontal, 4)
+            }
+
+            if viewModel.currentWordSet.generateCombinations {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(NSLocalizedString("options.section.combination", comment: ""))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    HStack {
+                        Text(NSLocalizedString("options.detail.maxWords", comment: ""))
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Stepper(
+                            value: Binding(
+                                get: { viewModel.currentWordSet.maxCombinationLength },
+                                set: { viewModel.currentWordSet.maxCombinationLength = $0 }
+                            ),
+                            in: 2...10,
+                            step: 1
+                        ) {
+                            Text("\(viewModel.currentWordSet.maxCombinationLength)")
+                                .font(.subheadline.monospacedDigit())
+                                .frame(minWidth: 20, alignment: .trailing)
+                        }
+                    }
+                    .padding(.horizontal, 4)
+                }
+                .padding(.top, 4)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+
+            if viewModel.currentWordSet.includeTypoVariants {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(NSLocalizedString("options.section.typo", comment: ""))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(NSLocalizedString("options.detail.typoLevel", comment: ""))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        Picker(NSLocalizedString("options.detail.typoLevel", comment: ""), selection: Binding(
+                            get: { viewModel.currentWordSet.typoVariantIntensity },
+                            set: { viewModel.currentWordSet.typoVariantIntensity = $0 }
+                        )) {
+                            Text(NSLocalizedString("options.typoVariants.low", comment: ""))
+                                .tag(TypoVariantIntensity.low)
+                            Text(NSLocalizedString("options.typoVariants.medium", comment: ""))
+                                .tag(TypoVariantIntensity.medium)
+                        }
+                        .pickerStyle(.segmented)
+
+                        Text(
+                            viewModel.currentWordSet.typoVariantIntensity == .medium
+                            ? NSLocalizedString("options.typoVariants.description.medium", comment: "")
+                            : NSLocalizedString("options.typoVariants.description.low", comment: "")
+                        )
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color(.systemGray5), lineWidth: 1)
+                    )
+                }
+                .padding(.top, 4)
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
