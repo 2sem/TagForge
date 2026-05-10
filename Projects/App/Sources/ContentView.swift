@@ -22,6 +22,7 @@ struct ContentView: View {
     @State private var showingBatchImportAlert = false
     @State private var batchImportAdded: Int = 0
     @State private var batchImportSkipped: Int = 0
+    @State private var isTypoIntensityExpanded: Bool = false
 
     var body: some View {
         ZStack {
@@ -212,7 +213,7 @@ private func TagChipListView() -> some View {
 }
 
     private func OptionsView() -> some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 10) {
             FlowLayout(spacing: 8) {
                 OptionButton(
                     isSelected: viewModel.currentWordSet.attachSharp,
@@ -261,6 +262,88 @@ private func TagChipListView() -> some View {
                 .padding(.horizontal, 4)
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(NSLocalizedString("options.typoVariants.title", comment: ""))
+                    .font(.subheadline.weight(.semibold))
+
+                Toggle(isOn: Binding(
+                    get: { viewModel.currentWordSet.includeTypoVariants },
+                    set: { newValue in
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            viewModel.currentWordSet.includeTypoVariants = newValue
+                            isTypoIntensityExpanded = newValue
+                        }
+                    }
+                )) {
+                    Text(NSLocalizedString("options.typoVariants.toggle", comment: ""))
+                        .font(.subheadline)
+                }
+
+                if viewModel.currentWordSet.includeTypoVariants {
+                    DisclosureGroup(
+                        NSLocalizedString("options.typoVariants.intensity", comment: ""),
+                        isExpanded: $isTypoIntensityExpanded
+                    ) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Picker(NSLocalizedString("options.typoVariants.intensity", comment: ""), selection: Binding(
+                                get: { viewModel.currentWordSet.typoVariantIntensity },
+                                set: { viewModel.currentWordSet.typoVariantIntensity = $0 }
+                            )) {
+                                Text(NSLocalizedString("options.typoVariants.low", comment: ""))
+                                    .tag(TypoVariantIntensity.low)
+                                Text(NSLocalizedString("options.typoVariants.medium", comment: ""))
+                                    .tag(TypoVariantIntensity.medium)
+                            }
+                            .pickerStyle(.segmented)
+
+                            if viewModel.currentWordSet.typoVariantIntensity == .medium {
+                                HStack(alignment: .top, spacing: 8) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundStyle(.orange)
+                                        .font(.footnote)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(NSLocalizedString("options.typoVariants.warning.title", comment: ""))
+                                            .font(.footnote.weight(.semibold))
+                                        Text(NSLocalizedString("options.typoVariants.warning.body", comment: ""))
+                                            .font(.footnote)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .padding(8)
+                                .background(Color.orange.opacity(0.08))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
+
+                            Text(NSLocalizedString("options.typoVariants.footnote", comment: ""))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.top, 6)
+                    }
+                    .font(.subheadline)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color(.systemGray5), lineWidth: 1)
+                    )
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+
+                    Text(NSLocalizedString("options.typoVariants.helper.on", comment: ""))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .transition(.opacity)
+                } else {
+                    Text(NSLocalizedString("options.typoVariants.helper.off", comment: ""))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .transition(.opacity)
+                }
+            }
+            .padding(.top, 6)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 12)
