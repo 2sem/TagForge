@@ -151,6 +151,40 @@
         }
       }
     },
+    "accessibility.option.typo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include typo variants"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형 포함"
+          }
+        }
+      }
+    },
+    "accessibility.option.typo.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows typo configuration options"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 설정 옵션을 표시합니다"
+          }
+        }
+      }
+    },
     "Add #" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -855,7 +889,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "가능성이 높은 소수의 변형만 생성합니다. 스팸처럼 보이지 않도록 선택적으로 사용하세요."
+            "value" : "적은 수의 오타 변형만 만듭니다. 과도한 사용은 피하세요."
           }
         }
       }
@@ -890,6 +924,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "태그 범위를 넓히기 위해 제한된 오타 변형을 추가합니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.helper.low" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creates a conservative set of likely typo variants."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가능성이 높은 오타 변형을 소수만 생성합니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.helper.medium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adds a wider set of typo variants while keeping results balanced."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형 범위를 조금 더 넓혀 더 다양하게 만들어줍니다."
           }
         }
       }
@@ -1009,6 +1077,125 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "신중하게 사용하세요"
+          }
+        }
+      }
+    },
+    "options.chip.typo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typo"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타"
+          }
+        }
+      }
+    },
+    "options.typoVariants.description.low" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creates a conservative set of likely typo variants."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가능성이 높은 오타 변형을 소수만 생성합니다."
+          }
+        }
+      }
+    },
+    "options.typoVariants.description.medium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adds a wider set of typo variants while keeping results balanced."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 변형 범위를 조금 더 넓혀 더 다양하게 만들어줍니다."
+          }
+        }
+      }
+    },
+    "options.detail.maxWords" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max words"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대 단어 수"
+          }
+        }
+      }
+    },
+    "options.detail.typoLevel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typo level"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타 강도"
+          }
+        }
+      }
+    },
+    "options.section.combination" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combination"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "조합"
+          }
+        }
+      }
+    },
+    "options.section.typo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typo"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오타"
           }
         }
       }

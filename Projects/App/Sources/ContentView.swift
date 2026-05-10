@@ -22,7 +22,6 @@ struct ContentView: View {
     @State private var showingBatchImportAlert = false
     @State private var batchImportAdded: Int = 0
     @State private var batchImportSkipped: Int = 0
-    @State private var isTypoIntensityExpanded: Bool = false
 
     var body: some View {
         ZStack {
@@ -239,89 +238,84 @@ private func TagChipListView() -> some View {
                         viewModel.currentWordSet.generateCombinations.toggle();
                     }
                 }
-            }
-            if viewModel.currentWordSet.generateCombinations {
-                HStack {
-                    Text(NSLocalizedString("combinations.max_length", comment: ""))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Stepper(
-                        value: Binding(
-                            get: { viewModel.currentWordSet.maxCombinationLength },
-                            set: { viewModel.currentWordSet.maxCombinationLength = $0 }
-                        ),
-                        in: 2...10,
-                        step: 1
-                    ) {
-                        Text("\(viewModel.currentWordSet.maxCombinationLength)")
-                            .font(.subheadline.monospacedDigit())
-                            .frame(minWidth: 20, alignment: .trailing)
+                OptionButton(
+                    isSelected: viewModel.currentWordSet.includeTypoVariants,
+                    accessibilityLabel: NSLocalizedString("accessibility.option.typo", comment: ""),
+                    accessibilityHint: NSLocalizedString("accessibility.option.typo.hint", comment: "")
+                ) {
+                    Text(NSLocalizedString("options.chip.typo", comment: ""))
+                        .font(.system(size: 13, design: .rounded).weight(.semibold))
+                        .foregroundColor(viewModel.currentWordSet.includeTypoVariants ? .white : Color(.label).opacity(0.65))
+                } action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        viewModel.currentWordSet.includeTypoVariants.toggle()
                     }
                 }
-                .padding(.horizontal, 4)
+            }
+
+            if viewModel.currentWordSet.generateCombinations {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(NSLocalizedString("options.section.combination", comment: ""))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    HStack {
+                        Text(NSLocalizedString("options.detail.maxWords", comment: ""))
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Stepper(
+                            value: Binding(
+                                get: { viewModel.currentWordSet.maxCombinationLength },
+                                set: { viewModel.currentWordSet.maxCombinationLength = $0 }
+                            ),
+                            in: 2...10,
+                            step: 1
+                        ) {
+                            Text("\(viewModel.currentWordSet.maxCombinationLength)")
+                                .font(.subheadline.monospacedDigit())
+                                .frame(minWidth: 20, alignment: .trailing)
+                        }
+                    }
+                    .padding(.horizontal, 4)
+                }
+                .padding(.top, 4)
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text(NSLocalizedString("options.typoVariants.title", comment: ""))
-                    .font(.subheadline.weight(.semibold))
+            if viewModel.currentWordSet.includeTypoVariants {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(NSLocalizedString("options.section.typo", comment: ""))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
 
-                Toggle(isOn: Binding(
-                    get: { viewModel.currentWordSet.includeTypoVariants },
-                    set: { newValue in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            viewModel.currentWordSet.includeTypoVariants = newValue
-                            isTypoIntensityExpanded = newValue
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(NSLocalizedString("options.detail.typoLevel", comment: ""))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        Picker(NSLocalizedString("options.detail.typoLevel", comment: ""), selection: Binding(
+                            get: { viewModel.currentWordSet.typoVariantIntensity },
+                            set: { viewModel.currentWordSet.typoVariantIntensity = $0 }
+                        )) {
+                            Text(NSLocalizedString("options.typoVariants.low", comment: ""))
+                                .tag(TypoVariantIntensity.low)
+                            Text(NSLocalizedString("options.typoVariants.medium", comment: ""))
+                                .tag(TypoVariantIntensity.medium)
                         }
+                        .pickerStyle(.segmented)
+
+                        Text(
+                            viewModel.currentWordSet.typoVariantIntensity == .medium
+                            ? NSLocalizedString("options.typoVariants.description.medium", comment: "")
+                            : NSLocalizedString("options.typoVariants.description.low", comment: "")
+                        )
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                )) {
-                    Text(NSLocalizedString("options.typoVariants.toggle", comment: ""))
-                        .font(.subheadline)
-                }
-
-                if viewModel.currentWordSet.includeTypoVariants {
-                    DisclosureGroup(
-                        NSLocalizedString("options.typoVariants.intensity", comment: ""),
-                        isExpanded: $isTypoIntensityExpanded
-                    ) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Picker(NSLocalizedString("options.typoVariants.intensity", comment: ""), selection: Binding(
-                                get: { viewModel.currentWordSet.typoVariantIntensity },
-                                set: { viewModel.currentWordSet.typoVariantIntensity = $0 }
-                            )) {
-                                Text(NSLocalizedString("options.typoVariants.low", comment: ""))
-                                    .tag(TypoVariantIntensity.low)
-                                Text(NSLocalizedString("options.typoVariants.medium", comment: ""))
-                                    .tag(TypoVariantIntensity.medium)
-                            }
-                            .pickerStyle(.segmented)
-
-                            if viewModel.currentWordSet.typoVariantIntensity == .medium {
-                                HStack(alignment: .top, spacing: 8) {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundStyle(.orange)
-                                        .font(.footnote)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(NSLocalizedString("options.typoVariants.warning.title", comment: ""))
-                                            .font(.footnote.weight(.semibold))
-                                        Text(NSLocalizedString("options.typoVariants.warning.body", comment: ""))
-                                            .font(.footnote)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                }
-                                .padding(8)
-                                .background(Color.orange.opacity(0.08))
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                            }
-
-                            Text(NSLocalizedString("options.typoVariants.footnote", comment: ""))
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(.top, 6)
-                    }
-                    .font(.subheadline)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 8)
                     .background(Color(.systemBackground))
@@ -330,20 +324,10 @@ private func TagChipListView() -> some View {
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color(.systemGray5), lineWidth: 1)
                     )
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-
-                    Text(NSLocalizedString("options.typoVariants.helper.on", comment: ""))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .transition(.opacity)
-                } else {
-                    Text(NSLocalizedString("options.typoVariants.helper.off", comment: ""))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .transition(.opacity)
                 }
+                .padding(.top, 4)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
-            .padding(.top, 6)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 12)
