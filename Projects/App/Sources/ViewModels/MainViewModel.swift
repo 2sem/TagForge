@@ -207,25 +207,214 @@ class MainViewModel: ObservableObject {
             }
             return tag;
         }
+
         // 2. 원본 단어 리스트
         let originalWords = currentWordSet.words?.map { $0.text } ?? [];
+
         // 3. 옵션 적용된 단어 리스트
-        var tags: [String] = originalWords.map { applyOptions(to: $0) };
+        var baseTags: [String] = originalWords.map { applyOptions(to: $0) };
+
         // 4. 조합 생성 및 옵션 적용
         if currentWordSet.generateCombinations {
             let combinations = generateCombinations(of: originalWords);
-            tags.append(contentsOf: combinations.map { applyOptions(to: $0) });
+            baseTags.append(contentsOf: combinations.map { applyOptions(to: $0) });
         }
+
         // 5. attachSharp 옵션이 켜져 있으면 마지막에 한 번만 #을 붙임
         if currentWordSet.attachSharp {
-            tags = tags.map { tag in
+            baseTags = baseTags.map { tag in
                 tag.hasPrefix("#") ? tag : "#" + tag;
             };
         }
-        // 6. Populate tag list and present sheet
+
+        // 6. typo variants (MVP): deterministic, one operation per tag, conservative cap
+        let tags: [String]
+        if currentWordSet.includeTypoVariants {
+            tags = appendTypoVariants(to: baseTags, intensity: currentWordSet.typoVariantIntensity)
+        } else {
+            tags = deduplicatedPreservingOrder(baseTags)
+        }
+
+        // 7. Populate tag list and present sheet
         generatedTagList = tags.map { GeneratedTag(text: $0) };
         showingTagSheet = true;
     }
+
+    private func appendTypoVariants(to baseTags: [String], intensity: TypoVariantIntensity) -> [String] {
+        let uniqueBaseTags = deduplicatedPreservingOrder(baseTags)
+        var finalTags = uniqueBaseTags
+        var seen = Swift.Set(uniqueBaseTags)
+        var typoAddedCount = 0
+
+        for baseTag in uniqueBaseTags {
+            guard typoAddedCount < typoVariantTotalCap else {
+                break
+            }
+
+            let candidates = typoVariants(for: baseTag, intensity: intensity)
+            for candidate in candidates {
+                guard typoAddedCount < typoVariantTotalCap else {
+                    break
+                }
+                guard !seen.contains(candidate) else {
+                    continue
+                }
+                finalTags.append(candidate)
+                seen.insert(candidate)
+                typoAddedCount += 1
+            }
+        }
+
+        return finalTags
+    }
+
+    private func typoVariants(for tag: String, intensity: TypoVariantIntensity) -> [String] {
+        guard tag.count >= minimumTypoTagLength else {
+            return []
+        }
+
+        let maxVariantsPerTag: Int
+        switch intensity {
+        case .low:
+            maxVariantsPerTag = 1
+        case .medium:
+            maxVariantsPerTag = 2
+        }
+
+        var variants: [String] = []
+        var seen = Swift.Set<String>()
+
+        if let substitution = keyboardNeighborSubstitutionVariant(of: tag), substitution != tag {
+            variants.append(substitution)
+            seen.insert(substitution)
+        }
+
+        if let transposed = middleAdjacentTranspositionVariant(of: tag),
+           transposed != tag,
+           !seen.contains(transposed) {
+            variants.append(transposed)
+            seen.insert(transposed)
+        }
+
+        if intensity == .medium,
+           let omitted = middleOmissionVariant(of: tag),
+           omitted != tag,
+           !seen.contains(omitted) {
+            variants.append(omitted)
+            seen.insert(omitted)
+        }
+
+        return Array(variants.prefix(maxVariantsPerTag))
+    }
+
+    private func keyboardNeighborSubstitutionVariant(of tag: String) -> String? {
+        var chars = Array(tag)
+        guard chars.count >= 3 else {
+            return nil
+        }
+
+        for index in 1..<(chars.count - 1) {
+            guard let replacement = keyboardNeighbor(for: chars[index]) else {
+                continue
+            }
+            chars[index] = replacement
+            return String(chars)
+        }
+
+        return nil
+    }
+
+    private func middleAdjacentTranspositionVariant(of tag: String) -> String? {
+        var chars = Array(tag)
+        guard chars.count >= 4 else {
+            return nil
+        }
+
+        // Avoid edge swaps: swap only where both characters are not first/last.
+        for index in 1..<(chars.count - 2) {
+            guard chars[index] != chars[index + 1] else {
+                continue
+            }
+            chars.swapAt(index, index + 1)
+            return String(chars)
+        }
+
+        return nil
+    }
+
+    private func middleOmissionVariant(of tag: String) -> String? {
+        let chars = Array(tag)
+        guard chars.count >= 4 else {
+            return nil
+        }
+
+        // Omit only from the middle (never first or last).
+        for index in 1..<(chars.count - 1) {
+            var candidate = chars
+            candidate.remove(at: index)
+            return String(candidate)
+        }
+
+        return nil
+    }
+
+    private func keyboardNeighbor(for character: Character) -> Character? {
+        let lower = Character(String(character).lowercased())
+        guard let neighbors = keyboardNeighborMap[lower],
+              let firstNeighbor = neighbors.first else {
+            return nil
+        }
+
+        if String(character) == String(character).uppercased() {
+            return Character(String(firstNeighbor).uppercased())
+        }
+        return firstNeighbor
+    }
+
+    private var keyboardNeighborMap: [Character: [Character]] {
+        [
+            "a": ["s", "q", "w", "z"],
+            "b": ["v", "g", "h", "n"],
+            "c": ["x", "d", "f", "v"],
+            "d": ["s", "e", "r", "f", "c", "x"],
+            "e": ["w", "s", "d", "r"],
+            "f": ["d", "r", "t", "g", "v", "c"],
+            "g": ["f", "t", "y", "h", "b", "v"],
+            "h": ["g", "y", "u", "j", "n", "b"],
+            "i": ["u", "j", "k", "o"],
+            "j": ["h", "u", "i", "k", "m", "n"],
+            "k": ["j", "i", "o", "l", "m"],
+            "l": ["k", "o", "p"],
+            "m": ["n", "j", "k"],
+            "n": ["b", "h", "j", "m"],
+            "o": ["i", "k", "l", "p"],
+            "p": ["o", "l"],
+            "q": ["w", "a"],
+            "r": ["e", "d", "f", "t"],
+            "s": ["a", "w", "e", "d", "x", "z"],
+            "t": ["r", "f", "g", "y"],
+            "u": ["y", "h", "j", "i"],
+            "v": ["c", "f", "g", "b"],
+            "w": ["q", "a", "s", "e"],
+            "x": ["z", "s", "d", "c"],
+            "y": ["t", "g", "h", "u"],
+            "z": ["a", "s", "x"]
+        ]
+    }
+
+    private func deduplicatedPreservingOrder(_ tags: [String]) -> [String] {
+        var seen = Swift.Set<String>()
+        var result: [String] = []
+        for tag in tags {
+            if seen.insert(tag).inserted {
+                result.append(tag)
+            }
+        }
+        return result
+    }
+
+    private var minimumTypoTagLength: Int { 4 }
+    private var typoVariantTotalCap: Int { 200 }
 
     private func generateCombinations(of words: [String]) -> [String] {
         var combinations = [String]()
