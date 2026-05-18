@@ -1,1 +1,6 @@
--
+Your app just got a little smoother!
+
+• Your last-used word set is now remembered on each device — no more jumping back to the first one after iCloud syncs.
+• The app no longer gets stuck on the loading screen if iCloud isn't available.
+• Tapping Share no longer shows the "Copied!" message — that's saved for Copy only.
+• The word count under each word set now displays correctly.
