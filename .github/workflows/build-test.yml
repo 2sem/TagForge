@@ -20,6 +20,9 @@ concurrency:
 jobs:
   test:
     runs-on: xcode-27
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout project
         uses: actions/checkout@v7
@@ -27,9 +30,26 @@ jobs:
       - name: Install Mise
         uses: jdx/mise-action@v5
 
+      - name: Cache Tuist dependencies
+        uses: actions/cache@v6
+        with:
+          path: |
+            Tuist/.build
+            ~/.cache/swifterpm
+            ~/.cache/tuist
+          key: tuist-build-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Tuist/Package.resolved') }}
+
+      - name: Log in Tuist
+        run: |
+          tuist auth login
+
       - name: Install Dependencies
         run: |
           tuist install
+
+      - name: Setup Tuist cache
+        run: |
+          tuist setup cache
 
       - name: Generate Xcode Project
         run: |
