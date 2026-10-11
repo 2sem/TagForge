@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TagForge is an iOS/iPadOS app (iOS 17.0+, portrait only) for generating hashtags from word combinations. Users build word sets, configure formatting options, and generate tags with optional combination permutations.
+TagForge is an iOS/iPadOS app (iOS 18.0+, portrait only) for generating hashtags from word combinations. Users build word sets, configure formatting options, and generate tags with optional combination permutations.
 
 ## Build & Project Setup
 
@@ -28,7 +28,7 @@ Open `App.xcworkspace` in Xcode to build and run.
 
 ```
 Projects/
-  App/              # Main app target (SwiftUI, iOS 17+)
+  App/              # Main app target (SwiftUI, iOS 18+)
   ThirdParty/       # Static framework wrapper (Alamofire)
   DynamicThirdParty/# Dynamic framework wrapper (Firebase suite)
 Tuist/
