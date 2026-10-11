@@ -35,7 +35,10 @@ class MainViewModel: ObservableObject {
     /// Upper bound on typo variants appended across all tags in one generation.
     private let typoVariantTotalCap = 200
     private var cancellables = Swift.Set<AnyCancellable>()
-    init(storageManager: WordSetManager = .shared, typoEngine: TypoEngine = TypoEngine()) {
+    // `WordSetManager.shared` is main-actor isolated, so resolve it in the init body
+    // instead of a default argument (evaluated in the caller's nonisolated context).
+    init(storageManager: WordSetManager? = nil, typoEngine: TypoEngine = TypoEngine()) {
+        let storageManager = storageManager ?? .shared
         self.storageManager = storageManager
         self.typoEngine = typoEngine
 
