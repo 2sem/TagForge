@@ -22,13 +22,35 @@ struct LatinTypoGenerator {
         }
 
         for variant in adjacentTranspositions(of: text) where variant.value != text {
-            let score = variant.position == 0 ? 1.4 : 2.4
-            bestByValue.insertKeepingBest(TypoCandidate(value: variant.value, score: score, rule: .adjacentTransposition))
+            bestByValue.insertKeepingBest(TypoCandidate(
+                value: variant.value,
+                score: transpositionScore(of: text, at: variant.position),
+                rule: .adjacentTransposition
+            ))
         }
 
         return bestByValue.values
             .filter { passesQualityFilter(original: text, candidate: $0, isMixedToken: isMixedToken) }
             .sortedByRank()
+    }
+
+    // MARK: - Scoring
+
+    /// Transposition outranks same-row substitution (2.7) but stays below repeated-letter omission (5.0).
+    private static let transpositionScore = 3.1
+    /// Swapped keys typed by opposite hands are the classic order slip (`Seoul` -> `Soeul`).
+    private static let crossHandTranspositionBonus = 0.2
+    private static let firstCharacterTranspositionScore = 1.4
+    private static let leftHandKeys: Swift.Set<Character> = Swift.Set("qwertasdfgzxcvb")
+
+    private func transpositionScore(of text: String, at position: Int) -> Double {
+        guard position > 0 else {
+            return Self.firstCharacterTranspositionScore
+        }
+        let chars = Array(text)
+        let pair = [chars[position], chars[position + 1]].map { Self.leftHandKeys.contains(Character($0.lowercased())) }
+        let isCrossHand = pair[0] != pair[1]
+        return Self.transpositionScore + (isCrossHand ? Self.crossHandTranspositionBonus : 0)
     }
 
     // MARK: - Generation

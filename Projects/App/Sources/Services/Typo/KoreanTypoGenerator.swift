@@ -16,6 +16,9 @@ struct KoreanTypoGenerator {
         Rule(kind: .koreanDoublePress, score: 2.7, variants: doublePresses)
     ]
 
+    /// 2-beolsik keys of the initials that may be over-pressed into a final: ㄱ ㄴ ㄹ ㅁ ㅂ ㅅ.
+    private static let commonDoublePressKeys: Swift.Set<Character> = ["r", "s", "f", "a", "q", "t"]
+
     /// Known uncanny outputs that pass the structural filters but should never be shown.
     private static let blockedOutputs: Swift.Set<String> = [
         "카커오톡", "맛짖", "서울오행", "서울요행", "Seoul오행", "Seoul요행",
@@ -107,8 +110,10 @@ struct KoreanTypoGenerator {
     }
 
     /// Repeated initial consonant becomes a tail final consonant (high-confidence over-press only).
+    /// Limited to the common final consonants; rare finals (`캌`, `댇`, `햏`) and the silent `ㅇ`
+    /// (`이` -> `잉` changes the word) read as machine-made rather than a stuck key.
     private static func doublePresses(for keystrokes: [Character]) -> [[Character]] {
-        guard keystrokes.count == 2, Hangul.finalIndexByKey[keystrokes[0]] != nil else {
+        guard keystrokes.count == 2, commonDoublePressKeys.contains(keystrokes[0]) else {
             return []
         }
         return [[keystrokes[0], keystrokes[1], keystrokes[0]]]
@@ -165,13 +170,28 @@ struct KoreanTypoGenerator {
         if Self.driftedMedialTransitions.contains([before.medial, after.medial]) {
             return false
         }
-        if before.final != after.final, !Self.allowedFinalTransitions.contains([before.final, after.final]) {
+        if before.final != after.final,
+           !isAllowedFinalTransition(from: before.final, to: after.final, rule: candidate.rule) {
             return false
         }
         if before.medial != after.medial, !Self.allowedMedialTransitions.contains([before.medial, after.medial]) {
             return false
         }
         return true
+    }
+
+    /// Final-consonant changes: substitutions must be on the allow-list; dropping the trailing final
+    /// (`x -> none`) is only valid for the missed-keystroke rule, and adding one (`none -> x`) only
+    /// for the double-press rule, which already guarantees the new final repeats the initial key.
+    private func isAllowedFinalTransition(from before: Int, to after: Int, rule: TypoCandidateRule) -> Bool {
+        switch (before, after) {
+        case (_, 0):
+            return rule == .koreanMissedKeystroke
+        case (0, _):
+            return rule == .koreanDoublePress
+        default:
+            return Self.allowedFinalTransitions.contains([before, after])
+        }
     }
 
     private func changedSyllable(original: String, candidate: String) -> (before: Hangul.Jamo, after: Hangul.Jamo)? {
