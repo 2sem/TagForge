@@ -29,7 +29,6 @@ let project = Project(
             sources: ["Sources/**"],
             resources: ["Resources/**"],
             dependencies: [
-                .project(name: .projects.thirdParty),
                 .project(name: .projects.dynamicThirdParty)
             ]
         ),

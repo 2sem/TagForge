@@ -29,10 +29,9 @@ Open `App.xcworkspace` in Xcode to build and run.
 ```
 Projects/
   App/              # Main app target (SwiftUI, iOS 18+)
-  ThirdParty/       # Static framework wrapper (Alamofire)
   DynamicThirdParty/# Dynamic framework wrapper (Firebase suite)
 Tuist/
-  Package.swift               # SwiftPM dependencies (Firebase, Alamofire) + PackageSettings
+  Package.swift               # SwiftPM dependencies (Firebase) + PackageSettings
   ProjectDescriptionHelpers/  # Shared Tuist helpers
 ```
 
@@ -63,7 +62,7 @@ Remote sync is detected via `NSPersistentStoreRemoteChange` notification, deboun
 ## Tuist Conventions
 
 - `String.projects.*` constants in `Tuist/ProjectDescriptionHelpers/Constants.swift` are used as project/target names
-- `Project.makeModule(...)` in `Project+Templates.swift` is the factory for ThirdParty module targets
+- `Project.makeModule(...)` in `Project+Templates.swift` is the factory for the DynamicThirdParty module target
 - SwiftPM dependencies live in `Tuist/Package.swift` (not per-project `packages:`); targets reference them with `.external(name:)`. Run `tuist install` after changing it; `Tuist/Package.resolved` is the lockfile
 - Bundle ID base: `com.toyboy2.tagforge`
 - Xcode compatibility: 16.4, Swift 5.7

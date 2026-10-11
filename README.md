@@ -40,7 +40,6 @@ Open `App.xcworkspace` in Xcode to build and run.
 ```
 Projects/
   App/                    # Main app target (SwiftUI, iOS 17+)
-  ThirdParty/             # Static framework wrapper (Alamofire)
   DynamicThirdParty/      # Dynamic framework wrapper (Firebase suite)
 Tuist/
   ProjectDescriptionHelpers/  # Shared Tuist helpers
