@@ -52,10 +52,10 @@ struct ContentView: View {
             }
         }
         .ignoresSafeArea(.keyboard)
-        .onChange(of: viewModel.isSyncing) { newValue in
+        .onChange(of: viewModel.isSyncing) { _, newValue in
             isSyncing = newValue
         }
-        .onChange(of: viewModel.syncMessage) { newValue in
+        .onChange(of: viewModel.syncMessage) { _, newValue in
             syncMessage = newValue
         }
         .alert("Duplicate Word", isPresented: $showingDuplicateAlert) {
@@ -198,7 +198,7 @@ private func TagChipListView() -> some View {
                     }
                     .padding(.vertical, 8)
                 }
-                .onChange(of: words.count) { _ in
+                .onChange(of: words.count) {
                     if let last = words.last {
                         withAnimation {
                             proxy.scrollTo(last.id, anchor: .bottom)
