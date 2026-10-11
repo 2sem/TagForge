@@ -36,6 +36,18 @@ let project = Project(
                 .project(name: .projects.thirdParty),
                 .project(name: .projects.dynamicThirdParty)
             ]
+        ),
+        Target.target(
+            name: "AppTests",
+            destinations: [.iPhone],
+            product: .unitTests,
+            bundleId: "\(Constants.baseBundleId).tests",
+            deploymentTargets: .iOS("18.0"),
+            infoPlist: .default,
+            sources: ["Tests/**"],
+            dependencies: [
+                .target(name: .projects.app)
+            ]
         )
     ]
 ) 
