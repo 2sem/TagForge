@@ -26,8 +26,10 @@ let project = Project(
                 "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
                 "ITSAppUsesNonExemptEncryption": false
             ]),
-            sources: ["Sources/**"],
-            resources: ["Resources/**"],
+            buildableFolders: [
+                "Sources",
+                "Resources"
+            ],
             scripts: [
                 // Must stay the last build phase. Path is relative to SRCROOT (Projects/App).
                 .post(
