@@ -34,7 +34,6 @@ struct FlowResult {
         var positions: [CGPoint] = []
         var currentPosition = CGPoint.zero
         var lineHeight: CGFloat = 0
-        var maxWidth = maxWidth
         
         for subview in subviews {
             let size = subview.sizeThatFits(.unspecified)
