@@ -27,7 +27,10 @@ let project = Project(
                 "ITSAppUsesNonExemptEncryption": false
             ]),
             sources: ["Sources/**"],
-            resources: ["Resources/**"],
+            resources: [
+                // Entitlements are applied via CODE_SIGN_ENTITLEMENTS in the xcconfigs; copying them into the bundle triggers a build warning.
+                .glob(pattern: "Resources/**", excluding: ["Resources/**/*.entitlements"])
+            ],
             scripts: [
                 // Must stay the last build phase. Path is relative to SRCROOT (Projects/App).
                 .post(
