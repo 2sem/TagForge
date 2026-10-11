@@ -70,3 +70,6 @@ Derived/
 
 ### Tuist managed dependencies ###
 Tuist/.build
+
+### Firebase (supplied locally from Firebase console) ###
+GoogleService-Info.plist

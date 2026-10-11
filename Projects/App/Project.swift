@@ -27,7 +27,37 @@ let project = Project(
                 "ITSAppUsesNonExemptEncryption": false
             ]),
             sources: ["Sources/**"],
-            resources: ["Resources/**"]
+            resources: ["Resources/**"],
+            scripts: [
+                // Must stay the last build phase. Path is relative to SRCROOT (Projects/App).
+                .post(
+                    script: """
+                    # GoogleService-Info.plist is untracked; skip upload when it was not supplied.
+                    if [ ! -f "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info.plist" ]; then
+                      echo "note: GoogleService-Info.plist missing; skipping Crashlytics dSYM upload"
+                      exit 0
+                    fi
+                    "${SRCROOT}/../../Tuist/.build/checkouts/firebase-ios-sdk/Crashlytics/run"
+                    """,
+                    name: "Upload dSYMs to Crashlytics",
+                    inputPaths: [
+                        "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+                        "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+                        "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}.debug.dylib",
+                        "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+                        "$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+                        "$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)"
+                    ],
+                    basedOnDependencyAnalysis: false
+                )
+            ],
+            dependencies: [
+                .external(name: "FirebaseAnalytics"),
+                .external(name: "FirebaseCrashlytics")
+            ],
+            settings: .settings(base: [
+                "ENABLE_USER_SCRIPT_SANDBOXING": "NO"
+            ])
         ),
         Target.target(
             name: "AppTests",
