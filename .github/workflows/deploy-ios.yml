@@ -20,6 +20,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: xcode-27
+    permissions:
+      contents: read
+      id-token: write
     env:
       PRODUCT_NAME: ${{ vars.PRODUCT_NAME }}
       PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
@@ -35,9 +38,25 @@ jobs:
       - name: Install Mise
         uses: jdx/mise-action@v5
 
+      - name: Cache Tuist dependencies
+        uses: actions/cache@v6
+        with:
+          path: |
+            Tuist/.build
+            ~/.cache/swifterpm
+          key: tuist-build-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Tuist/Package.resolved') }}
+
+      - name: Log in Tuist
+        run: |
+          tuist auth login
+
       - name: Install Dependencies
         run: |
           tuist install
+
+      - name: Setup Tuist cache
+        run: |
+          tuist setup cache
 
       - name: Generate Xcode Project
         run: |
