@@ -1,0 +1,40 @@
+name: BUILD TEST
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Projects/**'
+      - 'Tuist/**'
+      - 'Tuist.swift'
+      - 'Project.swift'
+      - 'Workspace.swift'
+      - 'mise.toml'
+      - '.github/workflows/build-test.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: xcode-27
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Install Mise
+        uses: jdx/mise-action@v5
+
+      - name: Install Dependencies
+        run: |
+          tuist install
+
+      - name: Generate Xcode Project
+        run: |
+          tuist generate --no-open
+
+      - name: Build and test
+        run: |
+          tuist test
