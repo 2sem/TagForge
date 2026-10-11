@@ -6,7 +6,6 @@ public extension Project {
         product: Product,
         bundleId: String,
         infoPlist: InfoPlist = .default,
-        packages: [Package] = [],
         sources: SourceFilesList = ["Sources/**"],
         resources: ResourceFileElements? = nil,
         dependencies: [TargetDependency] = []

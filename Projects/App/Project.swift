@@ -3,10 +3,6 @@ import ProjectDescriptionHelpers
 
 let project = Project(
     name: .projects.app,
-    packages: [
-        .package(id: "firebase.firebase-ios-sdk", from: "10.0.0"),
-        .package(id: "alamofire.alamofire", from: "5.8.1")
-    ],
     settings: .settings(
         base: [:],
         configurations: [
