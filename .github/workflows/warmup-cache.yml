@@ -1,0 +1,57 @@
+name: WARMUP CACHE
+
+# Keeps the Tuist/SwiftPM caches used by BUILD TEST alive on the default branch.
+# GitHub evicts caches unused for 7 days, so refresh weekly.
+# Not used by DEPLOY IOS.
+on:
+  schedule:
+    - cron: '0 18 * * 0' # every Sunday 18:00 UTC (Monday 03:00 KST)
+  push:
+    branches: [main]
+    paths:
+      - 'Tuist/Package.resolved'
+      - 'mise.toml'
+      - '.github/workflows/warmup-cache.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  warmup:
+    runs-on: xcode-27
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+
+      - name: Install Mise
+        uses: jdx/mise-action@v5
+
+      - name: Cache Tuist dependencies
+        uses: actions/cache@v6
+        with:
+          path: |
+            Tuist/.build
+            ~/.cache/swifterpm
+            ~/.cache/tuist
+          key: tuist-build-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Tuist/Package.resolved') }}
+
+      - name: Log in Tuist
+        run: |
+          tuist auth login
+
+      - name: Install Dependencies
+        run: |
+          tuist install
+
+      - name: Setup Tuist cache
+        run: |
+          tuist setup cache
+
+      - name: Warm Tuist binary cache
+        run: |
+          tuist cache
