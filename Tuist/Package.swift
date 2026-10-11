@@ -12,6 +12,6 @@ let packageSettings = PackageSettings(
 let package = Package(
     name: "TagForge",
     dependencies: [
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .upToNextMajor(from: "13.0.1"))
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .upToNextMinor(from: "12.18.0"))
     ]
 )
