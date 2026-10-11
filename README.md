@@ -15,7 +15,7 @@ TagForge lets you build word sets and generate all possible hashtag combinations
 
 - iOS 18.0+
 - Xcode 26.1.1+
-- [Tuist](https://tuist.io) 4.153.1 (managed via [mise](https://mise.jdx.dev))
+- [Tuist](https://tuist.io) 4.207.1 (managed via [mise](https://mise.jdx.dev))
 
 ## Getting Started
 
