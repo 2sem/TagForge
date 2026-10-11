@@ -1,21 +1,16 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let dynamicPackages: [Package] = [
-    .package(id: "firebase.firebase-ios-sdk", from: "10.0.0"),
-]
-
 let project = Project.makeModule(
     name: .projects.dynamicThirdParty,
     product: .framework,
     bundleId: "\(Constants.baseBundleId).dynamicthirdparty",
-    packages: dynamicPackages,
     sources: [],
     dependencies: [
-        .package(product: "FirebaseAnalytics"),
-        .package(product: "FirebaseAuth"),
-        .package(product: "FirebaseFirestore"),
-        .package(product: "FirebaseStorage"),
-        .package(product: "FirebaseCrashlytics"),
+        .external(name: "FirebaseAnalytics"),
+        .external(name: "FirebaseAuth"),
+        .external(name: "FirebaseFirestore"),
+        .external(name: "FirebaseStorage"),
+        .external(name: "FirebaseCrashlytics"),
     ]
 )
