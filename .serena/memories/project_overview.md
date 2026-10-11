@@ -8,13 +8,11 @@ iOS/iPadOS app (iOS 17.0+, portrait only) for generating hashtags from word comb
 - SwiftData + CloudKit (iCloud sync via private DB)
 - MVVM architecture
 - Tuist for project generation (never edit .xcodeproj directly)
-- Firebase suite (DynamicThirdParty dynamic framework)
 
 ## Module Structure
 ```
 Projects/
   App/              # Main app target
-  DynamicThirdParty/# Dynamic framework (Firebase)
 Tuist/
   ProjectDescriptionHelpers/
 ```

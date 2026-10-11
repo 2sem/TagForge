@@ -27,10 +27,7 @@ let project = Project(
                 "ITSAppUsesNonExemptEncryption": false
             ]),
             sources: ["Sources/**"],
-            resources: ["Resources/**"],
-            dependencies: [
-                .project(name: .projects.dynamicThirdParty)
-            ]
+            resources: ["Resources/**"]
         ),
         Target.target(
             name: "AppTests",

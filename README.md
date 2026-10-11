@@ -39,8 +39,7 @@ Open `App.xcworkspace` in Xcode to build and run.
 
 ```
 Projects/
-  App/                    # Main app target (SwiftUI, iOS 17+)
-  DynamicThirdParty/      # Dynamic framework wrapper (Firebase suite)
+  App/                    # Main app target (SwiftUI, iOS 18+)
 Tuist/
   ProjectDescriptionHelpers/  # Shared Tuist helpers
 ```
