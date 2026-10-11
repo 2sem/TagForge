@@ -41,8 +41,11 @@ Open `App.xcworkspace` in Xcode to build and run.
 Projects/
   App/                    # Main app target (SwiftUI, iOS 18+)
 Tuist/
+  Package.swift               # SPM deps (Firebase Analytics + Crashlytics)
   ProjectDescriptionHelpers/  # Shared Tuist helpers
 ```
+
+Firebase requires a `GoogleService-Info.plist` from the Firebase console, placed in `Projects/App/Resources/` (git-ignored). Without it the app runs with Firebase disabled.
 
 | File | Role |
 |------|------|

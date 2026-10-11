@@ -61,7 +61,9 @@ Remote sync is detected via `NSPersistentStoreRemoteChange` notification, deboun
 
 - `String.projects.*` constants in `Tuist/ProjectDescriptionHelpers/Constants.swift` are used as project/target names
 - `Project.makeModule(...)` in `Project+Templates.swift` is the factory for additional module targets
-- No third-party dependencies at the moment. When adding one, declare it in `Tuist/Package.swift` (not per-project `packages:`), reference it with `.external(name:)`, and run `tuist install`
+- Third-party deps live in `Tuist/Package.swift` (not per-project `packages:`), referenced with `.external(name:)`, then `tuist install`. Currently: firebase-ios-sdk 13.x (`FirebaseAnalytics`, `FirebaseCrashlytics`) linked directly from the App target; `Tuist/Package.resolved` is tracked.
+- `GoogleService-Info.plist` is git-ignored and must be supplied locally (put it in `Projects/App/Resources/`). Without it the app skips `FirebaseApp.configure()` (os_log warning) and the Crashlytics dSYM upload script exits early, so builds/tests still pass.
+- The Crashlytics upload runs as the App target's last `.post` script (`Tuist/.build/checkouts/firebase-ios-sdk/Crashlytics/run`); the App target sets `ENABLE_USER_SCRIPT_SANDBOXING = NO` for it. Release uses `dwarf-with-dsym`.
 - Bundle ID base: `com.toyboy2.tagforge`
 - Xcode compatibility: 16.4, Swift 5.7
 
