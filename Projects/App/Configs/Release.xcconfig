@@ -19,4 +19,4 @@ MARKETING_VERSION = 1.1.1
 CURRENT_PROJECT_VERSION = 1
 
 // Entitlements
-CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements
+CODE_SIGN_ENTITLEMENTS = Entitlements/App.entitlements
