@@ -1,6 +1,6 @@
-Your app just got a little smoother!
+Meet typo variants!
 
-• Your last-used word set is now remembered on each device — no more jumping back to the first one after iCloud syncs.
-• The app no longer gets stuck on the loading screen if iCloud isn't available.
-• Tapping Share no longer shows the "Copied!" message — that's saved for Copy only.
-• The word count under each word set now displays correctly.
+• Generate realistic typo variants of your words — turn them on from the new options in the tag generator.
+• Smarter typos for Korean and English: variants follow how each language is really mistyped, and the most likely ones come first.
+• Sync status messages are now properly localized.
+• Under-the-hood stability improvements and crash reporting.
