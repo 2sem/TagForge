@@ -4,10 +4,25 @@ import ProjectDescriptionHelpers
 let project = Project(
     name: .projects.app,
     settings: .settings(
-        base: [:],
+        base: SettingsDictionary()
+            .marketingVersion("1.1.1")
+            .currentProjectVersion("1")
+            .automaticCodeSigning(devTeam: "M29A6H95KD"),
         configurations: [
-            .debug(name: "Debug", xcconfig: "Configs/Debug.xcconfig"),
-            .release(name: "Release", xcconfig: "Configs/Release.xcconfig")
+            .debug(
+                name: "Debug",
+                settings: SettingsDictionary()
+                    .merging(["CODE_SIGN_ENTITLEMENTS": "Entitlements/App.debug.entitlements"])
+            ),
+            .release(
+                name: "Release",
+                settings: SettingsDictionary()
+                    .merging([
+                        "CODE_SIGN_ENTITLEMENTS": "Entitlements/App.entitlements",
+                        // Crashlytics dSYM upload needs dSYMs on device-bound builds.
+                        "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym"
+                    ])
+            )
         ]
     ),
     targets: [
