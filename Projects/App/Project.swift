@@ -5,8 +5,8 @@ let project = Project(
     name: .projects.app,
     settings: .settings(
         base: SettingsDictionary()
-            .marketingVersion("1.1.1")
-            .currentProjectVersion("1")
+            .marketingVersion("1.2.0")
+            .currentProjectVersion("2")
             .automaticCodeSigning(devTeam: "M29A6H95KD"),
         configurations: [
             .debug(
